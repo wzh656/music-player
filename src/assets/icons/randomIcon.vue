@@ -11,41 +11,36 @@
     style="enable-background: new 0 0 256 256"
     xml:space="preserve"
   >
-    <g>
-      <g>
-        <path
-          class="st0"
-          d="M207,43c1.08,0,2,0.92,2,2v112c0,1.08-0.92,2-2,2h-34.57V90.97c0-9.1-7.41-16.51-16.51-16.51H93V45
-			c0-1.08,0.92-2,2-2H207 M207,33H95c-6.6,0-12,5.4-12,12v39.46h72.92c3.59,0,6.51,2.91,6.51,6.51V169H207c6.6,0,12-5.4,12-12V45
-			C219,38.4,213.6,33,207,33L207,33z"
-        />
-      </g>
-      <g>
-        <path
-          class="st0"
-          d="M158,86c1.08,0,2,0.92,2,2v112c0,1.08-0.92,2-2,2H46c-1.08,0-2-0.92-2-2V88c0-1.08,0.92-2,2-2H158 M158,76H46
-			c-6.6,0-12,5.4-12,12v112c0,6.6,5.4,12,12,12h112c6.6,0,12-5.4,12-12V88C170,81.4,164.6,76,158,76L158,76z"
-        />
-      </g>
-    </g>
+    <path class="st3" d="M99.95,100.61l9.05,9.12" />
+    <path class="st3" d="M52,96.12h37.18c4.05,0,7.93,1.62,10.78,4.49" />
+    <path
+      class="st3"
+      d="M205,96.12h-39.93c-4.05,0-7.93,1.62-10.78,4.49l-54.34,54.77c-2.85,2.87-6.73,4.49-10.78,4.49H51"
+    />
+    <path class="st3" d="M154.3,155.39c2.85,2.87,6.73,4.49,10.78,4.49H205" />
+    <path class="st3" d="M143,144l11.3,11.39" />
+    <line class="st3" x1="205" y1="96.12" x2="194.44" y2="85.56" />
+    <line class="st3" x1="205" y1="96.56" x2="194.44" y2="107.12" />
+    <line class="st3" x1="205" y1="160.12" x2="194.44" y2="149.56" />
+    <line class="st3" x1="205" y1="160.56" x2="194.44" y2="171.12" />
   </svg>
 </template>
 
 <style type="text/css" scoped>
 .st0 {
-  /* fill: #cccccc; */
+  fill: #cccccc;
 }
 .st1 {
   fill: none;
-  /* stroke: #cccccc; */
+  stroke: #cccccc;
   stroke-width: 10;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-miterlimit: 10;
 }
 .st2 {
-  /* fill: #cccccc; */
-  /* stroke: #cccccc; */
+  fill: #cccccc;
+  stroke: #cccccc;
   stroke-width: 10;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -53,7 +48,7 @@
 }
 .st3 {
   fill: none;
-  /* stroke: #cccccc; */
+  stroke: #cccccc;
   stroke-width: 15;
   stroke-linecap: round;
   stroke-linejoin: round;

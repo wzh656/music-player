@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import closeIcon from "@/assets/icons/closeIcon.vue";
+import maximizeIcon from "@/assets/icons/maximizeIcon.vue";
+import minimizeIcon from "@/assets/icons/minimizeIcon.vue";
+import unmaximizeIcon from "@/assets/icons/unmaximizeIcon.vue";
 
 const isMaximized = ref(false);
 
@@ -15,9 +19,10 @@ function switchMaximum() {
 }
 
 //最大化状态切换
-window.electron.onChangeMaximum((value: boolean) => {
-  isMaximized.value = value;
-});
+if (window?.electron?.onChangeMaximum)
+  window.electron.onChangeMaximum((value: boolean) => {
+    isMaximized.value = value;
+  });
 
 //关闭窗口
 function close() {
@@ -30,18 +35,10 @@ function close() {
     <img class="logo" src="/favicon.ico" />
     <div class="title"><slot></slot></div>
     <div class="buttons">
-      <img @click="minimize" src="@/assets/icons/minimize.svg" />
-      <img
-        @click="switchMaximum"
-        v-if="!isMaximized"
-        src="@/assets/icons/maximize.svg"
-      />
-      <img
-        @click="switchMaximum"
-        v-if="isMaximized"
-        src="@/assets/icons/unmaximize.svg"
-      />
-      <img @click="close" class="red" src="@/assets/icons/close.svg" />
+      <minimizeIcon @click="minimize" />
+      <maximizeIcon @click="switchMaximum" v-if="!isMaximized" />
+      <unmaximizeIcon @click="switchMaximum" v-if="isMaximized" />
+      <closeIcon @click="close" class="red" />
     </div>
   </header>
 </template>
@@ -79,16 +76,31 @@ header {
     width: 150px;
     -webkit-app-region: none; //不可拖拽
 
-    img {
+    svg {
       width: 50px;
       height: 50px;
       padding: 1rem;
-      transition: background-color 0.3s;
+      stroke: var(--color-text);
+      fill: var(--color-text);
+      transition:
+        //hover加粗红色
+        background-color 0.3s,
+        stroke-width 0.3s,
+        //夜间模式切换
+        stroke 0.5s,
+        fill 0.5s;
 
       &:hover {
         background-color: var(--color-background-mute);
       }
+
+      //关闭按钮
+      &.red {
+        stroke-width: 10;
+      }
       &.red:hover {
+        stroke: white;
+        stroke-width: 30;
         background-color: red;
       }
     }

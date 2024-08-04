@@ -7,9 +7,7 @@ import TitleBar from "./TitleBar.vue";
     <TitleBar>
       <slot name="title"></slot>
     </TitleBar>
-    <div class="content">
-      <slot name="content"></slot>
-    </div>
+    <slot name="content"></slot>
   </main>
 </template>
 
@@ -17,5 +15,9 @@ import TitleBar from "./TitleBar.vue";
 .window {
   display: flex;
   flex-direction: column;
+
+  header {
+    flex: 0;
+  }
 }
 </style>

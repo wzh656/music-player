@@ -12,19 +12,22 @@
     xml:space="preserve"
   >
     <g>
+      <polygon
+        class="st2"
+        points="41.03,97.65 60.38,97.65 102.74,50.35 102.74,205.65 60.38,163.29 41.03,163.29 	"
+      />
       <g>
         <path
-          class="st0"
-          d="M207,43c1.08,0,2,0.92,2,2v112c0,1.08-0.92,2-2,2h-34.57V90.97c0-9.1-7.41-16.51-16.51-16.51H93V45
-			c0-1.08,0.92-2,2-2H207 M207,33H95c-6.6,0-12,5.4-12,12v39.46h72.92c3.59,0,6.51,2.91,6.51,6.51V169H207c6.6,0,12-5.4,12-12V45
-			C219,38.4,213.6,33,207,33L207,33z"
+          class="st1"
+          d="M136.03,72.71c0,0,26,24,26,54s-26,56.57-26,56.57"
         />
-      </g>
-      <g>
         <path
-          class="st0"
-          d="M158,86c1.08,0,2,0.92,2,2v112c0,1.08-0.92,2-2,2H46c-1.08,0-2-0.92-2-2V88c0-1.08,0.92-2,2-2H158 M158,76H46
-			c-6.6,0-12,5.4-12,12v112c0,6.6,5.4,12,12,12h112c6.6,0,12-5.4,12-12V88C170,81.4,164.6,76,158,76L158,76z"
+          class="st1"
+          d="M158.07,64.24c0,0,29.99,27.68,29.99,62.28s-29.99,65.24-29.99,65.24"
+        />
+        <path
+          class="st1"
+          d="M179.23,52c0,0,35.74,32.99,35.74,74.23S179.23,204,179.23,204"
         />
       </g>
     </g>
@@ -33,19 +36,19 @@
 
 <style type="text/css" scoped>
 .st0 {
-  /* fill: #cccccc; */
+  fill: #cccccc;
 }
 .st1 {
   fill: none;
-  /* stroke: #cccccc; */
+  stroke: #cccccc;
   stroke-width: 10;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-miterlimit: 10;
 }
 .st2 {
-  /* fill: #cccccc; */
-  /* stroke: #cccccc; */
+  fill: #cccccc;
+  stroke: #cccccc;
   stroke-width: 10;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -53,7 +56,7 @@
 }
 .st3 {
   fill: none;
-  /* stroke: #cccccc; */
+  stroke: #cccccc;
   stroke-width: 15;
   stroke-linecap: round;
   stroke-linejoin: round;
