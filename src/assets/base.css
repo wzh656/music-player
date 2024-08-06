@@ -25,7 +25,7 @@
 :root {
   --color-theme: #ff0000; /* red */
   --color-theme-soft: #ffcccc; /* light red */
-  --color-theme-mute: #ff9999; /* muted red */
+  --color-theme-mute: #ff6666; /* muted red */
 
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);

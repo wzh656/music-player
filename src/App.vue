@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, provide } from "vue";
 import WindowApp from "@/components/WindowApp.vue";
 import PlayController from "./components/PlayController.vue";
 import pageView from "./components/pageView.vue";
@@ -21,6 +22,21 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener(
   updateColor,
 );
 updateColor();
+
+/* 注入控制依赖 */
+const playList = ref([]); //播放列表
+const playMode = ref<PlayMode>("list"); //播放模式
+const playState = ref(false); //播放状态
+const currentSonglist = ref(null); //当前歌单名称
+const currentMusic = ref(null); //当前音乐
+const volume = ref(0.8); //音量
+
+provide("playList", playList);
+provide("playMode", playMode);
+provide("playState", playState);
+provide("currentMusic", currentMusic);
+provide("currentSonglist", currentSonglist);
+provide("volume", volume);
 </script>
 
 <template>
@@ -29,7 +45,7 @@ updateColor();
     <template #content>
       <section class="content">
         <pageView class="pageView"></pageView>
-        <PlayController></PlayController>
+        <PlayController class="playController"></PlayController>
       </section>
     </template>
   </WindowApp>
@@ -46,7 +62,12 @@ updateColor();
     height: 100%;
 
     .pageView {
-      height: 100%;
+      height: 0;
+      flex: 1 1 auto;
+    }
+
+    .playController {
+      flex: 0;
     }
   }
 }

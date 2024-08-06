@@ -7,21 +7,38 @@ import fs from "node:fs";
 /* const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename); */
 
-//初始化文件
-const songListPath = path.resolve("./songList.json"); //歌单文件路径
+/* 循环读取列表中文件 */
+function readRecursively(paths, fileList = []) {
+  for (const filePath of paths) {
+    if (fs.statSync(filePath).isDirectory()) {
+      const newPaths = fs
+        .readdirSync(filePath)
+        .map((file) => path.join(filePath, file)); //新路径
+      readRecursively(newPaths, fileList); //文件夹 递归读取
+    } else {
+      fileList.push(filePath); //文件 加入列表
+    }
+  }
+  return fileList;
+}
+
+/* 初始化文件 */
+const songListPath = path.resolve("./userdata/songList.json"); //歌单文件路径
 function initFile() {
   if (!fs.existsSync(songListPath))
     fs.writeFileSync(songListPath, JSON.stringify({}));
 }
 
-// 添加事件交互
+/* 添加事件交互 */
 function addEventListener() {
+  //最小化窗口
   ipcMain.on("minimize", (event) => {
     const webContents = event.sender;
     const win = BrowserWindow.fromWebContents(webContents); //获取发出事件的窗口
     win.minimize();
   });
 
+  //切换最大化
   ipcMain.on("switchMaximum", (event) => {
     const webContents = event.sender;
     const win = BrowserWindow.fromWebContents(webContents); //获取发出事件的窗口
@@ -32,10 +49,19 @@ function addEventListener() {
     }
   });
 
-  ipcMain.handle("getSongList", () => {
+  //获取歌单列表
+  ipcMain.handle("getSongLists", () => {
     const text = fs.readFileSync(songListPath);
     console.log(JSON.parse(text));
     return JSON.parse(text);
+  });
+
+  //获取歌单歌曲
+  ipcMain.handle("getSongListSongs", (event, name) => {
+    const text = fs.readFileSync(songListPath);
+    const songList = JSON.parse(text);
+    const paths = songList[name].paths;
+    return readRecursively(paths); //循环读取列表中文件
   });
 }
 
@@ -48,6 +74,7 @@ function createWindow() {
     frame: false,
     autoHideMenuBar: true,
     webPreferences: {
+      webSecurity: false, //关闭安全策略 允许本地加载
       preload: path.resolve("./preload.js"), //path.join(__dirname, "preload.js"),
     },
   });
