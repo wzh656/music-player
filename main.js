@@ -1,11 +1,12 @@
-import { app, BrowserWindow, ipcMain, Menu } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, session } from "electron";
 import process from "process";
 import path from "node:path";
 import fs from "node:fs";
 // import { fileURLToPath } from "url";
 
-/* const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename); */
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+const vueDevToolsPath = path.resolve("./extensions/vue-devtools"); //必须绝对路径
 
 /* 循环读取列表中文件 */
 function readRecursively(paths, fileList = []) {
@@ -22,8 +23,16 @@ function readRecursively(paths, fileList = []) {
   return fileList;
 }
 
+/* 过滤后缀 */
+const MUSIC_SUFFIXS = [".mp3", ".wav", ".flac", ".aac"];
+function filterEndsWith(paths, suffixs) {
+  return paths.filter((path) =>
+    suffixs.some((suffix) => path.endsWith(suffix)),
+  );
+}
+
 /* 初始化文件 */
-const songListPath = path.resolve("./userdata/songList.json"); //歌单文件路径
+const songListPath = path.join("./userdata/songList.json"); //歌单文件路径
 function initFile() {
   if (!fs.existsSync(songListPath))
     fs.writeFileSync(songListPath, JSON.stringify({}));
@@ -61,7 +70,8 @@ function addEventListener() {
     const text = fs.readFileSync(songListPath);
     const songList = JSON.parse(text);
     const paths = songList[name].paths;
-    return readRecursively(paths); //循环读取列表中文件
+    const files = readRecursively(paths); //循环读取列表中文件
+    return filterEndsWith(files, MUSIC_SUFFIXS); //过滤后缀
   });
 }
 
@@ -75,7 +85,7 @@ function createWindow() {
     autoHideMenuBar: true,
     webPreferences: {
       webSecurity: false, //关闭安全策略 允许本地加载
-      preload: path.resolve("./preload.js"), //path.join(__dirname, "preload.js"),
+      preload: path.resolve("./preload.js"), //必须绝对路径
     },
   });
   Menu.setApplicationMenu(null); //清空菜单
@@ -96,7 +106,11 @@ function createWindow() {
 
 //应用准备完成
 initFile(); //初始化文件
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // if (process.env.NODE_ENV === "development") {
+  await session.defaultSession.loadExtension(vueDevToolsPath);
+  // }
+
   createWindow();
 
   app.on("activate", function () {

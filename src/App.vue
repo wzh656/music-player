@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, provide } from "vue";
 import WindowApp from "@/components/WindowApp.vue";
-import PlayController from "./components/PlayController.vue";
-import pageView from "./components/pageView.vue";
+import PlayController from "@/components/PlayControllerBar.vue";
+import PageView from "@/components/PageViewer.vue";
+import { PlayMode } from "@/types/PlayMode";
+
+/* 深色模式 */
 
 /* 深色模式 */
 const rootElem = document.querySelector(":root") as HTMLElement; //根元素
@@ -24,15 +27,17 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener(
 updateColor();
 
 /* 注入控制依赖 */
-const playList = ref([]); //播放列表
-const playMode = ref<PlayMode>("list"); //播放模式
+const playMode = ref<PlayMode>(PlayMode.sequence); //播放模式
+const playList = ref([]); //顺序播放列表
+const playListShuffled = ref([]); //打乱后的播放列表
 const playState = ref(false); //播放状态
-const currentSonglist = ref(null); //当前歌单名称
-const currentMusic = ref(null); //当前音乐
+const currentSonglist = ref<string | null>(null); //当前歌单名称
+const currentMusic = ref<string | null>(null); //当前播放音乐
 const volume = ref(0.8); //音量
 
-provide("playList", playList);
 provide("playMode", playMode);
+provide("playList", playList);
+provide("playListShuffled", playListShuffled);
 provide("playState", playState);
 provide("currentMusic", currentMusic);
 provide("currentSonglist", currentSonglist);
@@ -44,7 +49,7 @@ provide("volume", volume);
     <template #title>Music Player</template>
     <template #content>
       <section class="content">
-        <pageView class="pageView"></pageView>
+        <PageView class="pageView"></PageView>
         <PlayController class="playController"></PlayController>
       </section>
     </template>

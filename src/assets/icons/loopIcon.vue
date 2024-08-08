@@ -14,11 +14,14 @@
     <g>
       <path
         class="st3"
-        d="M128,98.75h69c6.6,0,12,5.4,12,12v55c0,6.6-5.4,12-12,12H59c-6.6,0-12-5.4-12-12v-55c0-6.6,5.4-12,12-12h29.24
-		"
+        d="M128,98.75h69c6.6,0,12,5.4,12,12v55c0,6.6-5.4,12-12,12H59c-6.6,0-12-5.4-12-12v-55c0-6.6,5.4-12,12-12"
       />
-      <line class="st3" x1="128.56" y1="97.75" x2="144.03" y2="82.28" />
-      <line class="st3" x1="144.03" y1="115.75" x2="128.56" y2="100.28" />
+      <line class="st3" x1="128.26" y1="98.75" x2="143.74" y2="83.28" />
+      <line class="st3" x1="143.74" y1="114.22" x2="128.26" y2="98.75" />
+      <rect x="69.25" y="48.25" class="st4" width="49.75" height="115" />
+      <text transform="matrix(1 0 0 1 71.0273 136.25)" class="st2 st5 st6">
+        1
+      </text>
     </g>
   </svg>
 </template>
@@ -50,5 +53,14 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-miterlimit: 10;
+}
+.st4 {
+  fill: none;
+}
+.st5 {
+  font-family: "AdobeSongStd-Light-GBpc-EUC-H";
+}
+.st6 {
+  font-size: 100px;
 }
 </style>

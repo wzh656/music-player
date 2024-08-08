@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { inject, ref, type Ref } from "vue";
+import { PlayMode } from "@/types/PlayMode"; //播放模式
 import * as musicController from "@/ts/audioPlay"; //音乐播放控制器
+import shuffleArray from "@/ts/shuffleArray"; //原地打乱数组
 
 /* 获取依赖 */
+const playMode = inject("playMode") as Ref<PlayMode>; //播放列表
 const playList = inject("playList") as Ref<string[]>; //播放列表
+const playListShuffled = inject("playListShuffled") as Ref<string[]>; //打乱后的播放列表
 const playState = inject("playState") as Ref<boolean>; //播放状态
 const currentSonglist = inject("currentSonglist") as Ref<string | null>; //当前歌单名称
 const currentMusic = inject("currentMusic") as Ref<string | null>; //当前播放歌曲
@@ -19,10 +23,12 @@ window?.electron?.getSongLists().then((list: SongLists) => {
 async function songlistPlay(listName: string) {
   if (!songLists.value) throw new Error("[songlistPlay] 歌单列表为空");
 
-  currentSonglist.value = listName; //设为当前歌单
   const songs = await window?.electron?.getSongListSongs(listName); //获取所有歌曲
   songLists.value[listName].num = songs.length; //更新歌单歌曲数量
-  playList.value = songs; //设为播放菜单
+
+  currentSonglist.value = listName; //设为当前歌单名称
+  playList.value = songs; //设为播放歌单
+  playListShuffled.value = shuffleArray([...songs]); //设为打乱后的播放歌单
 
   //如果当前有播放歌曲，则暂停
   if (currentMusic.value) {
@@ -30,11 +36,12 @@ async function songlistPlay(listName: string) {
     playState.value = false;
   }
 
-  //随机播放一首
-  const song = songs[~~(Math.random() * songs.length)];
-  musicController.playMusic(song, volume);
-  playState.value = true;
-  currentMusic.value = song;
+  currentMusic.value =
+    playMode.value == PlayMode.random
+      ? playListShuffled.value[0]
+      : playList.value[0]; //设为当前播放歌曲
+  playState.value = true; //设为播放
+  musicController.playMusic(currentMusic.value, volume); //播放歌曲
 }
 
 /* 右键歌单设置 */

@@ -1,8 +1,5 @@
 /// <reference types="vite/client" />
 
-/* 播放模式 */
-type PlayMode = "list" | "single" | "random";
-
 /* 歌单列表 */
 interface SongLists {
   [key: string]: {
