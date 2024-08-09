@@ -9,6 +9,13 @@ interface SongLists {
   };
 }
 
+/* 搜索结果 */
+interface SearchDataItem {
+  index: number;
+  name: string;
+  author: string;
+}
+
 /* preload electron 交互 */
 declare interface Window {
   electron: {
@@ -16,6 +23,11 @@ declare interface Window {
     switchMaximum: () => void;
     onChangeMaximum: (callback: (bool: boolean) => void) => void;
     getSongLists: () => Promise<SongLists>;
-    getSongListSongs: (string) => Promise<string[]>;
+    getSongListSongs: (name: string) => Promise<string[]>;
+    getLyrics: (path: string) => Promise<string>;
+    downloadFile: (url: string, name: string) => void;
+    openUrl: (url: string) => void;
+    search: (keyword: string, page: number) => void;
+    onSearchData: (callback: (data: SearchDataItem[]) => void) => void;
   };
 }

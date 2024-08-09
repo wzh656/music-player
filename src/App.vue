@@ -27,12 +27,14 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener(
 updateColor();
 
 /* 注入控制依赖 */
-const playMode = ref<PlayMode>(PlayMode.sequence); //播放模式
+const playMode = ref<PlayMode>(PlayMode.random); //播放模式
 const playList = ref([]); //顺序播放列表
 const playListShuffled = ref([]); //打乱后的播放列表
 const playState = ref(false); //播放状态
 const currentSonglist = ref<string | null>(null); //当前歌单名称
 const currentMusic = ref<string | null>(null); //当前播放音乐
+const currentTime = ref(0); //当前播放时间
+const currentDuration = ref(0); //当前播放音乐时长
 const volume = ref(0.8); //音量
 
 provide("playMode", playMode);
@@ -41,12 +43,14 @@ provide("playListShuffled", playListShuffled);
 provide("playState", playState);
 provide("currentMusic", currentMusic);
 provide("currentSonglist", currentSonglist);
+provide("currentTime", currentTime);
+provide("currentDuration", currentDuration);
 provide("volume", volume);
 </script>
 
 <template>
   <WindowApp class="window">
-    <template #title>Music Player</template>
+    <template #title>冈易音乐播放器</template>
     <template #content>
       <section class="content">
         <PageView class="pageView"></PageView>

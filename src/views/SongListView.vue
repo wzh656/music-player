@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { inject, ref, type Ref } from "vue";
 import { PlayMode } from "@/types/PlayMode"; //播放模式
-import * as musicController from "@/ts/audioPlay"; //音乐播放控制器
+import * as musicController from "@/ts/musicController"; //音乐播放控制器
 import shuffleArray from "@/ts/shuffleArray"; //原地打乱数组
 
 /* 获取依赖 */
@@ -11,6 +11,8 @@ const playListShuffled = inject("playListShuffled") as Ref<string[]>; //打乱�
 const playState = inject("playState") as Ref<boolean>; //播放状态
 const currentSonglist = inject("currentSonglist") as Ref<string | null>; //当前歌单名称
 const currentMusic = inject("currentMusic") as Ref<string | null>; //当前播放歌曲
+const currentTime = inject("currentTime") as Ref<number>; //当前播放时间
+const currentDuration = inject("currentDuration") as Ref<number>; //当前音乐时长
 const volume = inject("volume") as Ref<number>; //音量大小
 
 /* 获取歌单列表 */
@@ -18,6 +20,17 @@ let songLists: Ref<SongLists | null> = ref(null);
 window?.electron?.getSongLists().then((list: SongLists) => {
   songLists.value = list;
 });
+
+/* 播放音乐 */
+function playMusic(music: string) {
+  currentMusic.value = music; //设为当前播放
+  musicController.playMusic(currentMusic.value, {
+    volume,
+    currentTime,
+    duration: currentDuration,
+  }); //播放
+  playState.value = true; //设为播放状态
+}
 
 /* 左键播放歌单 */
 async function songlistPlay(listName: string) {
@@ -36,12 +49,11 @@ async function songlistPlay(listName: string) {
     playState.value = false;
   }
 
-  currentMusic.value =
+  playMusic(
     playMode.value == PlayMode.random
       ? playListShuffled.value[0]
-      : playList.value[0]; //设为当前播放歌曲
-  playState.value = true; //设为播放
-  musicController.playMusic(currentMusic.value, volume); //播放歌曲
+      : playList.value[0],
+  ); //播放第一首歌曲
 }
 
 /* 右键歌单设置 */
@@ -68,19 +80,18 @@ function songlistMenu(event: MouseEvent, name: string) {
 
 <style scoped lang="scss">
 div {
-  text-align: center;
-  font-size: 2em;
-  margin-top: 2em;
+  /* text-align: center; */
+  font-size: 1.5em;
 }
 
 ul {
   display: flex;
   flex-direction: column;
   /* gap: 1em; */
-  height: 0;
-  flex: 1;
-  margin: 1rem 0;
-  padding: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 1rem 0;
   list-style: none;
 
   /* 自定义滚动条 */

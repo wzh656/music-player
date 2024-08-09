@@ -18,7 +18,7 @@
   --vt-c-text-light-1: var(--vt-c-indigo);
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+  --vt-c-text-dark-2: rgba(150, 150, 150, 1);
 }
 
 /* semantic color variables for this project */
@@ -36,8 +36,10 @@
 
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
+  --color-text-soft: var(--vt-c-black-mute);
+  --color-text-highlight: var(--vt-c-black);
 
-  --section-gap: 160px;
+  /* --section-gap: 160px; */
 }
 
 :root[data-color-scheme="dark"] {
@@ -50,4 +52,6 @@
 
   --color-heading: var(--vt-c-text-dark-1);
   --color-text: var(--vt-c-text-dark-2);
+  --color-text-soft: var(--vt-c-white-mute);
+  --color-text-highlight: var(--vt-c-white);
 }

@@ -30,19 +30,19 @@
 
 <style type="text/css" scoped>
 .st0 {
-  fill: #cccccc;
+  /* fill: #cccccc; */
 }
 .st1 {
   fill: none;
-  stroke: #cccccc;
+  /* stroke: #cccccc; */
   stroke-width: 10;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-miterlimit: 10;
 }
 .st2 {
-  fill: #cccccc;
-  stroke: #cccccc;
+  /* fill: #cccccc; */
+  /* stroke: #cccccc; */
   stroke-width: 10;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -50,7 +50,7 @@
 }
 .st3 {
   fill: none;
-  stroke: #cccccc;
+  /* stroke: #cccccc; */
   stroke-width: 15;
   stroke-linecap: round;
   stroke-linejoin: round;

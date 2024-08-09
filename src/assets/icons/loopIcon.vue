@@ -18,7 +18,6 @@
       />
       <line class="st3" x1="128.26" y1="98.75" x2="143.74" y2="83.28" />
       <line class="st3" x1="143.74" y1="114.22" x2="128.26" y2="98.75" />
-      <rect x="69.25" y="48.25" class="st4" width="49.75" height="115" />
       <text transform="matrix(1 0 0 1 71.0273 136.25)" class="st2 st5 st6">
         1
       </text>
@@ -28,19 +27,19 @@
 
 <style type="text/css" scoped>
 .st0 {
-  fill: #cccccc;
+  /* fill: #cccccc; */
 }
 .st1 {
   fill: none;
-  stroke: #cccccc;
+  /* stroke: #cccccc; */
   stroke-width: 10;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-miterlimit: 10;
 }
 .st2 {
-  fill: #cccccc;
-  stroke: #cccccc;
+  /* fill: #cccccc; */
+  /* stroke: #cccccc; */
   stroke-width: 10;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -48,7 +47,7 @@
 }
 .st3 {
   fill: none;
-  stroke: #cccccc;
+  /* stroke: #cccccc; */
   stroke-width: 15;
   stroke-linecap: round;
   stroke-linejoin: round;

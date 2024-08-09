@@ -87,8 +87,8 @@ header {
         background-color 0.3s,
         stroke-width 0.3s,
         //夜间模式切换
-        stroke 0.5s,
-        fill 0.5s;
+        stroke 0.3s,
+        fill 0.3s;
 
       &:hover {
         background-color: var(--color-background-mute);
