@@ -97,21 +97,27 @@ function addEventListener() {
 
   //搜索
   let searchWindow;
+  const apiUrl = "https://www.yyssq.cn/";
   ipcMain.on("search", async (event, keyword, page) => {
     searchWindow = new BrowserWindow({
-      width: 400,
-      height: 600,
+      width: 600,
+      height: 400,
       autoHideMenuBar: true,
       show: false,
       webPreferences: {
-        // webSecurity: false, //关闭安全策略 允许本地加载
-        preload: path.resolve("./search-preload.js"), //必须绝对路径
+        preload: path.resolve("./js/search-preload.js"), //必须绝对路径
       },
     });
-    searchWindow.loadURL(
-      `https://music.haom.ren/?name=${encodeURIComponent(keyword)}&type=netease`,
-    );
-    searchWindow.webContents.openDevTools({ mode: "detach" }); // 打开开发工具
+    searchWindow.loadURL(apiUrl);
+    // searchWindow.webContents.openDevTools({ mode: "detach" }); // 打开开发工具
+
+    //注入代码
+    keyword = keyword.replaceAll("'", " ");
+    const js = fs.readFileSync("./js/search-inject.js").toString();
+    searchWindow.webContents.executeJavaScript(js); //注入代码
+    searchWindow.webContents.executeJavaScript(
+      `onSearch('${keyword}', ${+page})`,
+    ); //注入代码
   });
 
   ipcMain.on("searchData", (event, data) => {
@@ -133,7 +139,7 @@ function createWindow() {
     show: false,
     webPreferences: {
       webSecurity: false, //关闭安全策略 允许本地加载
-      preload: path.resolve("./preload.js"), //必须绝对路径
+      preload: path.resolve("./js/main-preload.js"), //必须绝对路径
     },
   });
   Menu.setApplicationMenu(null); //清空菜单

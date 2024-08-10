@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { computed, inject, type Ref } from "vue";
-import playIcon from "@/assets/icons/playIcon.vue";
-import stopIcon from "@/assets/icons/stopIcon.vue";
 import lastIcon from "@/assets/icons/lastIcon.vue";
 import nextIcon from "@/assets/icons/nextIcon.vue";
-import sequenceIcon from "@/assets/icons/sequenceIcon.vue";
-import loopIcon from "@/assets/icons/loopIcon.vue";
-import randomIcon from "@/assets/icons/randomIcon.vue";
-import volumeIcon from "@/assets/icons/volumeIcon.vue";
+import PlayModeIcon from "./playControl/PlayModeIcon.vue"; //播放模式按钮组
+import PlayPauseIcon from "./playControl/PlayPauseIcon.vue"; //播放暂停按钮组
+import VolumeController from "./playControl/VolumeController.vue"; //音量控制器
+import TimeLine from "./playControl/TimeLine.vue"; //播放进度控制器
 import { PlayMode } from "@/types/PlayMode"; //播放模式类型
 import * as musicController from "@/ts/musicController"; //音乐播放控制
-import shuffleArray from "@/ts/shuffleArray"; //原地打乱数组
 
 /* 获取依赖 */
 const playMode = inject("playMode") as Ref<PlayMode>; //播放模式
@@ -32,13 +29,6 @@ const currentMusicName = computed(() => {
   return matchResult ? matchResult[0] : currentMusic.value; //0:含后缀名, 1:文件名
 });
 
-/* 计算播放进度style */
-const progressStyle = computed(() => {
-  return {
-    width: `${(currentTime.value / currentDuration.value) * 100}%`,
-  };
-});
-
 /* 播放音乐 */
 function playMusic(music: string) {
   currentMusic.value = music; //设为当前播放
@@ -48,20 +38,6 @@ function playMusic(music: string) {
     duration: currentDuration,
   }); //播放
   playState.value = true; //设为播放状态
-}
-
-/* 继续播放 */
-function play() {
-  if (!currentMusic.value) return; //当前无音乐播放
-
-  musicController.play();
-  playState.value = true;
-}
-
-/* 暂停 */
-function pause() {
-  musicController.pause();
-  playState.value = false;
 }
 
 /* 上一首 */
@@ -100,65 +76,16 @@ musicController.onEnd(() => {
   }
 });
 
-/* 设置播放时间 */
-function setCurrentTime(event: MouseEvent) {
-  if (!currentMusic.value) return; //当前无音乐播放
-
-  const target = event.currentTarget as HTMLElement; //设置监听器的元素
-  console.log(event.offsetX);
-  const progress = event.offsetX / target.clientWidth; //进度
-  currentTime.value = progress * currentDuration.value; //设置当前播放时间
-  musicController.setCurrentTime(currentTime.value); //设置播放时间
-}
-
-/* 切换播放模式 */
-function switchPlayMode() {
-  switch (playMode.value) {
-    case PlayMode.sequence:
-      playMode.value = PlayMode.loop; //单曲循环
-      break;
-    case PlayMode.loop:
-      playMode.value = PlayMode.random; //随机播放
-      playListShuffled.value = shuffleArray(playListShuffled.value);
-      break;
-    case PlayMode.random:
-      playMode.value = PlayMode.sequence; //顺序播放
-      break;
-  }
-}
-
-/* 格式化时间 */
-function formatTime(time: number) {
-  const minutes = ~~((time / 60) % 60) + "";
-  const seconds = ~~(time % 60) + "";
-  if (currentDuration.value > 3600) {
-    //超过1h的音频显示小时
-    const hours = ~~(time / 3600) + "";
-    return `${hours}:${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
-  } else {
-    return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
-  }
-}
-
 /* 键盘控制 */
 window.addEventListener("keydown", (event) => {
   switch (event.key) {
-    //空格 暂停播放
-    case " ":
-      playState.value ? pause() : play();
-      event.preventDefault();
-      break;
-
     //左箭头 快退5s
     //ctrl+左箭头 上一首
     case "ArrowLeft":
       if (event.ctrlKey) {
         lastMusic();
-      } else {
-        currentTime.value -= 5;
-        musicController.setCurrentTime(currentTime.value);
+        event.preventDefault();
       }
-      event.preventDefault();
       break;
 
     //右箭头 快进5s
@@ -166,11 +93,8 @@ window.addEventListener("keydown", (event) => {
     case "ArrowRight":
       if (event.ctrlKey) {
         nextMusic();
-      } else {
-        currentTime.value += 5;
-        musicController.setCurrentTime(currentTime.value);
+        event.preventDefault();
       }
-      event.preventDefault();
       break;
   }
 });
@@ -180,31 +104,13 @@ window.addEventListener("keydown", (event) => {
   <div class="playController">
     <div class="musicName">{{ currentMusicName }}</div>
     <div class="playButtons">
-      <sequenceIcon
-        @click="switchPlayMode"
-        v-show="playMode == PlayMode.sequence"
-      ></sequenceIcon>
-      <loopIcon
-        @click="switchPlayMode"
-        v-show="playMode == PlayMode.loop"
-      ></loopIcon>
-      <randomIcon
-        @click="switchPlayMode"
-        v-show="playMode == PlayMode.random"
-      ></randomIcon>
+      <PlayModeIcon></PlayModeIcon>
       <lastIcon @click="lastMusic"></lastIcon>
-      <playIcon @click="play" class="playButton" v-show="!playState" />
-      <stopIcon @click="pause" class="playButton" v-show="playState" />
+      <PlayPauseIcon></PlayPauseIcon>
       <nextIcon @click="nextMusic"></nextIcon>
-      <volumeIcon></volumeIcon>
+      <VolumeController></VolumeController>
     </div>
-    <div class="timeInfo">
-      <span>{{ formatTime(currentTime) }}</span>
-      <div class="progressBar" @click="setCurrentTime">
-        <div class="thumb" :style="progressStyle"></div>
-      </div>
-      <span>{{ formatTime(currentDuration) }}</span>
-    </div>
+    <TimeLine></TimeLine>
   </div>
 </template>
 
@@ -236,42 +142,6 @@ window.addEventListener("keydown", (event) => {
       cursor: pointer;
       stroke: var(--color-text);
       fill: var(--color-text);
-    }
-
-    svg.playButton {
-      width: 50px;
-      height: 50px;
-      background-color: var(--color-theme);
-      border-radius: 100%;
-      stroke: white;
-      fill: white;
-    }
-  }
-
-  //进度条
-  .timeInfo {
-    display: flex;
-    align-items: center;
-
-    span {
-      flex: none;
-    }
-
-    .progressBar {
-      flex: auto;
-      width: 100%;
-      height: 5px;
-      margin: 0 0.5rem;
-      background-color: var(--color-theme-soft);
-      border-radius: 5px;
-      cursor: pointer;
-
-      .thumb {
-        width: 0;
-        height: 5px;
-        background-color: var(--color-theme);
-        border-radius: 5px;
-      }
     }
   }
 }

@@ -11,9 +11,19 @@ interface SongLists {
 
 /* 搜索结果 */
 interface SearchDataItem {
-  index: number;
-  name: string;
-  author: string;
+  title: string; //标题
+  author: string; //作者
+  lrc: string; //歌词
+  songid: number; //id
+  pic: string; //封面
+  url: string; //音频链接
+  link: string; //网易云链接
+  type: string; //平台类型
+}
+interface SeartchData {
+  code: number;
+  data: SearchDataItem[];
+  error: string;
 }
 
 /* preload electron 交互 */
@@ -28,6 +38,6 @@ declare interface Window {
     downloadFile: (url: string, name: string) => void;
     openUrl: (url: string) => void;
     search: (keyword: string, page: number) => void;
-    onSearchData: (callback: (data: SearchDataItem[]) => void) => void;
+    onSearchData: (callback: (data: SeartchData) => void) => void;
   };
 }

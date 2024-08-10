@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { inject, ref, type Ref } from "vue";
-import * as musicController from "@/ts/musicController"; //音乐播放控制器
 import { PlayMode } from "@/types/PlayMode";
+import * as musicController from "@/ts/musicController"; //音乐播放控制器
 
 /* 获取依赖 */
 const playMode = inject("playMode") as Ref<PlayMode>; //播放列表
@@ -165,6 +165,7 @@ function openWeb() {
       border-radius: 5px;
       font-size: 1em;
       color: white;
+      cursor: pointer;
       /* background: none;
       border: 1px solid var(--color-theme);
       color: var(--color-theme); */
@@ -180,7 +181,6 @@ function openWeb() {
       &.original {
         background: linear-gradient(45deg, #ffc400, #ffe388);
       }
-      cursor: pointer;
 
       &:active {
         background-color: var(--color-theme-soft);

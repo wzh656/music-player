@@ -32,7 +32,7 @@ watch(currentMusic, async () => {
     };
   }
 
-  console.log("[LyricsView]", currentMusic.value, lines, data);
+  // console.log("[LyricsView]", currentMusic.value, lines, data);
 });
 
 /* 监听鼠标滚动 停止自动滚动 */
