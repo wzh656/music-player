@@ -23,7 +23,7 @@ function pause() {
 }
 
 /* 键盘控制 */
-window.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   switch (event.key) {
     //空格 暂停播放
     case " ":

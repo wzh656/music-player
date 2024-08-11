@@ -141,6 +141,7 @@ const vipDialogShow = ref(false);
 let vipDialogId: number | null = null;
 function vipDialog() {
   vipDialogShow.value = false;
+  nextTick(() => (vipDialogShow.value = true));
 
   if (vipDialogId) clearTimeout(vipDialogId);
   vipDialogId = setTimeout(() => (vipDialogShow.value = false), 2000);
@@ -148,116 +149,105 @@ function vipDialog() {
 </script>
 
 <template>
-  <div class="view">
-    <h1>音乐搜索</h1>
-    <input
-      @keydown.stop="onkeydown"
-      type="text"
-      placeholder="请输入歌曲名或歌手名，回车搜索"
-    />
-    <div class="searching" v-if="searching">搜索中，请等待……</div>
-    <div class="result">
-      <template v-for="(item, index) in searchData" :key="item.songid">
-        <span
-          @mouseenter="onmouseenter"
-          @mouseleave="onmouseleave"
-          data-type="index"
-          @click="playMusic(item)"
-        >
-          {{ index + 1 }}
-        </span>
-        <span
-          @mouseenter="onmouseenter"
-          @mouseleave="onmouseleave"
-          data-type="name"
-          @click="playMusic(item)"
-        >
-          {{ item.title }}
-        </span>
-        <span
-          @mouseenter="onmouseenter"
-          @mouseleave="onmouseleave"
-          data-type="author"
-          @click="playMusic(item)"
-        >
-          {{ item.author }}
-        </span>
-        <button @click="downloadMusic(item)">下载音乐</button>
-        <button @click="downloadLyrics(item)">下载歌词</button>
-      </template>
-    </div>
-    <Transition name="fade">
-      <div class="prop" v-show="vipDialogShow">会员歌曲，无法操作</div>
-    </Transition>
+  <h1>音乐搜索</h1>
+  <input
+    @keydown.stop="onkeydown"
+    type="text"
+    placeholder="请输入歌曲名或歌手名，回车搜索"
+  />
+  <div class="searching" v-if="searching">搜索中，请等待……</div>
+  <div class="result">
+    <template v-for="(item, index) in searchData" :key="item.songid">
+      <span
+        @mouseenter="onmouseenter"
+        @mouseleave="onmouseleave"
+        data-type="index"
+        @click="playMusic(item)"
+      >
+        {{ index + 1 }}
+      </span>
+      <span
+        @mouseenter="onmouseenter"
+        @mouseleave="onmouseleave"
+        data-type="name"
+        @click="playMusic(item)"
+      >
+        {{ item.title }}
+      </span>
+      <span
+        @mouseenter="onmouseenter"
+        @mouseleave="onmouseleave"
+        data-type="author"
+        @click="playMusic(item)"
+      >
+        {{ item.author }}
+      </span>
+      <button @click="downloadMusic(item)">下载音乐</button>
+      <button @click="downloadLyrics(item)">下载歌词</button>
+    </template>
   </div>
+  <Transition name="fade">
+    <div class="prop" v-if="vipDialogShow">会员歌曲，无法操作</div>
+  </Transition>
 </template>
 
 <style scoped lang="scss">
-.view {
+@import "@/assets/template.scss";
+
+h1 {
+  text-align: center;
+}
+
+//搜索框
+input {
+  flex: none;
+  width: 80%;
+  height: 2em;
+  margin: 1rem auto;
+  padding: 1rem;
+  @include primaryInput;
+}
+
+//搜索中提示
+.searching {
+  text-align: center;
+}
+
+//搜索结果
+.result {
+  flex: auto;
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  /* margin-bottom: 3rem; */
+  padding: 0;
 
-  input {
-    flex: none;
-    width: 80%;
-    height: 2em;
-    margin: 1rem;
-    padding: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
+  display: grid;
+  grid-template-columns: 2rem 1fr 1fr 4rem 4rem;
+  // gap: 1rem;
+  overflow-x: hidden;
+  overflow-y: overlay;
+  @include customScrollbar;
+
+  span {
+    padding: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+
+    &.active {
+      background-color: var(--color-background-soft);
+    }
   }
 
-  .result {
-    flex: auto;
-    width: 100%;
-    height: 100%;
-    margin-bottom: 3rem;
-    padding: 0;
-
-    display: grid;
-    grid-template-columns: 0.3fr 1fr 1fr 0.5fr 0.5fr;
-    // gap: 1rem;
-    overflow-y: overlay;
-
-    &::-webkit-scrollbar {
-      width: 5px;
-      background-color: var(--color-theme-soft);
-      border-radius: 5px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--color-theme);
-      border-radius: 5px;
-    }
-
-    span {
-      padding: 0.5rem;
-      text-align: center;
-      cursor: pointer;
-
-      &.active {
-        background-color: var(--color-background-soft);
-      }
-    }
-
-    button {
-      width: 3rem;
-      height: 3rem;
-      border: 1px solid var(--color-theme);
-      background-color: var(--color-background);
-      color: var(--color-theme);
-      border-radius: 100%;
-      padding: 0.5rem;
-      cursor: pointer;
-      margin: 0.5rem;
-    }
+  button {
+    width: 3rem;
+    height: 3rem;
+    margin: 0.5rem;
+    @include primaryButtonOutline;
+    border-radius: 100%;
   }
 }
 
+//vip弹出框
 .prop {
   position: absolute;
   left: 50%;
@@ -275,18 +265,18 @@ function vipDialog() {
   box-shadow: 0 0 5px #88888888;
 }
 
-.fade-enter-active,
-.fade-leave-active {
+//淡入动画，淡出无动画
+.fade-enter-active {
   transition:
     opacity 0.3s,
     margin-top 0.3s;
 }
 .fade-enter-from {
   opacity: 0;
-  margin-top: -5px;
+  margin-top: -30px;
 }
-.fade-leave-to {
+/* .fade-leave-to {
   opacity: 0;
   margin-top: 5px;
-}
+} */
 </style>

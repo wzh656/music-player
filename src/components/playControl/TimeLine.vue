@@ -39,13 +39,15 @@ function formatTime(time: number) {
 }
 
 /* 键盘控制 */
-window.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   switch (event.key) {
     //左箭头 快退5s
     //ctrl+左箭头 上一首
     case "ArrowLeft":
       if (!event.ctrlKey) {
         currentTime.value -= 5;
+        if (currentTime.value < 0) currentTime.value = 0;
+
         musicController.setCurrentTime(currentTime.value);
         event.preventDefault();
       }
@@ -56,6 +58,9 @@ window.addEventListener("keydown", (event) => {
     case "ArrowRight":
       if (!event.ctrlKey) {
         currentTime.value += 5;
+        if (currentTime.value > currentDuration.value)
+          currentTime.value = currentDuration.value;
+
         musicController.setCurrentTime(currentTime.value);
         event.preventDefault();
       }

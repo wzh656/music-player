@@ -108,163 +108,158 @@ function openWeb() {
 </script>
 
 <template>
-  <div class="view">
-    <h1>网易云推荐</h1>
-    <p><small>（部分会员歌曲可能无法下载播放）</small></p>
-    <div class="recommend-buttons">
-      <button @click="hotRecommend" class="hot">热歌推荐</button>
-      <button @click="newRecommend" class="new">新歌推荐</button>
-      <button @click="risingRecommend" class="rising">飙升推荐</button>
-      <button @click="originalRecommend" class="original">原创推荐</button>
-    </div>
-    <div class="song" v-if="songPicUrl">
-      <img :src="songPicUrl" @click="playMusic" :disabled="vipSong" />
-      <div class="info">
-        <div class="name">{{ songName }}</div>
-        <div class="author">{{ songAuthor }}</div>
-        <div class="buttons">
-          <button @click.stop="download" :disabled="vipSong">下载</button>
-          <button @click.stop="openWeb">打开</button>
-        </div>
+  <h1>网易云推荐</h1>
+  <p><small>（部分会员歌曲因版权原因无法下载播放）</small></p>
+  <div class="recommend-buttons">
+    <button @click="hotRecommend" class="hot">热歌推荐</button>
+    <button @click="newRecommend" class="new">新歌推荐</button>
+    <button @click="risingRecommend" class="rising">飙升推荐</button>
+    <button @click="originalRecommend" class="original">原创推荐</button>
+  </div>
+  <div class="songCard" v-if="songPicUrl">
+    <img
+      :src="songPicUrl"
+      @click="playMusic"
+      :disabled="vipSong"
+      tabindex="0"
+    />
+    <div class="info">
+      <div class="name">{{ songName }}</div>
+      <div class="author">{{ songAuthor }}</div>
+      <div class="buttons">
+        <button @click.stop="download" :disabled="vipSong">下载</button>
+        <button @click.stop="openWeb">打开</button>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.view {
-  width: 100%;
-  height: 100%;
+@import "@/assets/template.scss";
+
+//标题
+h1 {
+  text-align: center;
+  font-size: 1.8em;
+}
+
+p {
+  text-align: center;
+}
+
+//所有按钮
+.recommend-buttons {
   display: flex;
-  padding: 1rem;
-  flex-direction: column;
-  overflow-y: overlay;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 1rem auto;
 
-  //标题
-  h1 {
-    text-align: center;
-    font-size: 1.8em;
-  }
-
-  //所有按钮
-  .recommend-buttons {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    margin: 1rem auto;
-
-    button {
-      flex: 0 1 40%;
-      margin: 0.5rem;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      font-size: 1em;
-      color: white;
-      cursor: pointer;
-      /* background: none;
-      border: 1px solid var(--color-theme);
-      color: var(--color-theme); */
-      &.hot {
-        background: linear-gradient(45deg, #ff0000, #ff8888);
-      }
-      &.new {
-        background: linear-gradient(45deg, #55ff00, #b0ff88);
-      }
-      &.rising {
-        background: linear-gradient(45deg, #8000ff, #c388ff);
-      }
-      &.original {
-        background: linear-gradient(45deg, #ffc400, #ffe388);
-      }
-
-      &:active {
-        background-color: var(--color-theme-soft);
-      }
-    }
-  }
-
-  //歌曲卡片
-  .song {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
+  button {
+    flex: 0 1 40%;
     margin: 0.5rem;
-    padding: 0.5rem;
-    margin-bottom: 3rem;
-    border-radius: 1rem;
-    background-color: var(--color-border);
-    box-shadow: 1px 1px 5px var(--color-border-hover);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    color: white;
+    cursor: pointer;
 
-    //歌曲卡片 歌曲图片
-    img {
-      width: 100px;
-      height: 100px;
-      margin: 1rem;
-      border-radius: 5px;
-      background-color: gray;
-      cursor: pointer;
-      &[disabled="true"] {
-        cursor: not-allowed;
-      }
-
-      &::after {
-        content: "";
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-      }
+    &.hot {
+      background: linear-gradient(45deg, #ff0000, #ff8888);
+    }
+    &.new {
+      background: linear-gradient(45deg, #55ff00, #b0ff88);
+    }
+    &.rising {
+      background: linear-gradient(45deg, #8000ff, #c388ff);
+    }
+    &.original {
+      background: linear-gradient(45deg, #ffc400, #ffe388);
     }
 
-    //歌曲卡片 歌曲信息
-    .info {
+    &:active {
+      background-color: var(--color-theme-soft);
+    }
+  }
+}
+
+//歌曲卡片
+.songCard {
+  @include flex(row);
+  align-items: center;
+  width: max-content;
+  margin: 1rem auto;
+  padding: 0.5rem;
+  /* margin-bottom: 3rem; */
+  border-radius: 1rem;
+  background-color: var(--color-border);
+  box-shadow: 1px 1px 5px var(--color-border-hover);
+
+  //歌曲卡片 歌曲图片
+  img {
+    width: 100px;
+    height: 100px;
+    margin: 1rem;
+    border-radius: 5px;
+    background-color: gray;
+    cursor: pointer;
+    &[disabled="true"] {
+      cursor: not-allowed;
+    }
+
+    &::after {
+      content: "";
+      width: 100%;
       height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+
+  //歌曲卡片 歌曲信息
+  .info {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    //歌曲卡片 歌曲信息 名称
+    .name {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    //歌曲卡片 歌曲信息 作者
+    .author {
+      font-size: 1em;
+      color: #999;
+    }
+
+    //歌曲卡片 歌曲信息 按钮
+    .buttons {
       display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
+      margin: 0 auto;
 
-      //歌曲卡片 歌曲信息 名称
-      .name {
-        font-size: 1.2em;
-        font-weight: bold;
-      }
-
-      //歌曲卡片 歌曲信息 作者
-      .author {
+      button {
+        margin: 0.5rem;
+        padding: 10px 20px;
         font-size: 1em;
-        color: #999;
-      }
+        @include primaryButton;
+        /* border: none;
+        border-radius: 5px;
+        color: white;
+        background-color: var(--color-theme);
+        cursor: pointer; */
 
-      //歌曲卡片 歌曲信息 按钮
-      .buttons {
-        display: flex;
-        margin: 0 auto;
+        &:active {
+          background-color: var(--color-theme-mute);
+        }
 
-        button {
-          margin: 0.5rem;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          font-size: 1em;
-          color: white;
-          background-color: var(--color-theme);
-          cursor: pointer;
-
-          &:active {
-            background-color: var(--color-theme-mute);
-          }
-
-          &[disabled] {
-            background-color: var(--color-theme-soft);
-            cursor: not-allowed;
-          }
+        &[disabled] {
+          background-color: var(--color-theme-soft);
+          cursor: not-allowed;
         }
       }
     }

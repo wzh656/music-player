@@ -77,7 +77,7 @@ musicController.onEnd(() => {
 });
 
 /* 键盘控制 */
-window.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   switch (event.key) {
     //左箭头 快退5s
     //ctrl+左箭头 上一首
@@ -115,9 +115,10 @@ window.addEventListener("keydown", (event) => {
 </template>
 
 <style scoped lang="scss">
+@import "@/assets/template.scss";
+
 .playController {
-  display: flex;
-  flex-direction: column;
+  @include flex(column);
   gap: 1rem;
   padding: 1rem;
   border-radius: 15px 15px 0 0;
@@ -132,7 +133,7 @@ window.addEventListener("keydown", (event) => {
 
   //控制按钮组
   .playButtons {
-    display: flex;
+    @include flex(row);
     justify-content: space-evenly;
     align-items: center;
 

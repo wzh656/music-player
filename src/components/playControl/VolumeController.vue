@@ -25,15 +25,18 @@ const volumeStyle = computed(() => {
 //调节音量
 const volumeBarElem = ref<HTMLDivElement | null>(null);
 const volumeBarDown = ref(false); //鼠标按下时方可调节
-function volumeMouseDown() {
+function volumeMouseDown(event: MouseEvent) {
   volumeBarDown.value = true;
+  handleVolume(event); //按下时调整音量
 }
 document.addEventListener("mouseup", function () {
   volumeBarDown.value = false; //全局释放鼠标均可触发
 });
 document.addEventListener("mousemove", function (event: MouseEvent) {
   if (!volumeBarDown.value) return;
-
+  handleVolume(event); //移动时调整音量
+});
+function handleVolume(event: MouseEvent) {
   const { top, height } = volumeBarElem.value!.getBoundingClientRect();
   let volumeValue = 1 - (event.pageY - top) / height;
   if (volumeValue < 0.03) volumeValue = 0;
@@ -41,10 +44,10 @@ document.addEventListener("mousemove", function (event: MouseEvent) {
   volumeValue = +volumeValue.toFixed(2);
   volume.value = volumeValue;
   console.log("[volumeChange]", volumeValue);
-});
+}
 
 /* 键盘控制 */
-window.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
   switch (event.key) {
     //上箭头 音量增加
     case "ArrowUp":

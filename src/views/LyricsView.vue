@@ -38,7 +38,7 @@ watch(currentMusic, async () => {
 /* 监听鼠标滚动 停止自动滚动 */
 let autoScroll = true;
 let scrollId: null | number = null;
-window.addEventListener("wheel", () => {
+document.addEventListener("wheel", () => {
   autoScroll = false;
 
   if (scrollId != null) clearTimeout(scrollId);
@@ -54,12 +54,12 @@ watch(currentTime, () => {
   activeIndex.value =
     data.findIndex((line) => line.time > currentTime.value) - 1;
 
-  console.log(
+  /* console.log(
     "[LyricsView]",
     currentTime.value,
     activeIndex.value,
     data[activeIndex.value],
-  );
+  ); */
 
   if (!autoScroll) return; //禁止滚动
   if (activeIndex.value > 0) {
@@ -100,20 +100,21 @@ function setCurrentTime(time: number) {
 </template>
 
 <style scoped lang="scss">
+@import "@/assets/template.scss";
+
 div {
   /* text-align: center; */
+  margin: auto;
   font-size: 1.5em;
 }
 
 ul {
-  display: flex;
-  flex-direction: column;
+  @include flex(column);
   height: 100%;
   padding: 0;
   overflow-y: auto;
-  &::-webkit-scrollbar {
-    display: none; //隐藏滚动条
-  }
+  @include hiddenScrollbar;
+  // @include customScrollbar;
 
   li {
     display: block;

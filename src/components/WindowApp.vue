@@ -12,9 +12,10 @@ import TitleBar from "./TitleBar.vue";
 </template>
 
 <style scoped lang="scss">
+@import "@/assets/template.scss";
+
 .window {
-  display: flex;
-  flex-direction: column;
+  @include flex(column);
 
   header {
     flex: 0;

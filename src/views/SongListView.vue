@@ -79,28 +79,32 @@ function songlistMenu(event: MouseEvent, name: string) {
 </template>
 
 <style scoped lang="scss">
+@import "@/assets/template.scss";
+
 div {
   /* text-align: center; */
   font-size: 1.5em;
 }
 
 ul {
-  display: flex;
-  flex-direction: column;
+  @include flex(column);
+
   /* gap: 1em; */
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 1rem 0;
+  /* padding-bottom: 4rem; */
   list-style: none;
 
   /* 自定义滚动条 */
-  overflow-y: overlay; //滚动条不显示
+  @include customScrollbar;
+  /* overflow-y: overlay; //滚动条不显示
   //整个滚动条
   &::-webkit-scrollbar {
     width: 8px;
-    background: none;
-    // background: var(--color-border);
+    // background: none;
+    background: var(--color-theme-soft);
     border-radius: 100rem;
   }
   //滚动条滑块
@@ -112,7 +116,7 @@ ul {
     &:hover {
       background-color: var(--color-theme);
     }
-  }
+  } */
 
   li {
     font-size: 1.5em;

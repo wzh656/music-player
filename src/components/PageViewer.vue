@@ -4,7 +4,7 @@ import SongListView from "@/views/SongListView.vue";
 import LyricsView from "@/views/LyricsView.vue";
 import RecommendView from "@/views/RecommendView.vue";
 import SearchView from "@/views/SearchView.vue";
-// import Setting from "@/views/SettingView.vue";
+import SettingsView from "@/views/SettingsView.vue";
 
 //切换页面
 enum Pages {
@@ -82,17 +82,21 @@ function switchPage(page: Pages) {
     <div class="view" v-show="currentPage == Pages.search">
       <SearchView></SearchView>
     </div>
+    <div class="view" v-show="currentPage == Pages.setting">
+      <SettingsView></SettingsView>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+@import "@/assets/template.scss";
+
 .pageView {
-  display: flex;
-  flex-direction: column;
+  @include flex(column);
 
   //导航栏
   nav {
-    display: flex;
+    @include flex(row);
     justify-content: space-evenly;
     align-items: center;
 
@@ -125,10 +129,12 @@ function switchPage(page: Pages) {
   .view {
     flex: auto;
     height: 100%;
+    /* padding-bottom: 1rem; */
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flex(column);
+    @include customScrollbar;
+    /* justify-content: center;
+    align-items: center; */
   }
 }
 </style>
