@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { PlayMode } from "@/types/PlayMode";
 import { inject, nextTick, reactive, ref, type Ref } from "vue";
+// import { PlayMode } from "@/types/PlayMode";
 import * as musicController from "@/ts/musicController"; //音乐播放控制器
 
 /* 获取依赖 */
-const playMode = inject("playMode") as Ref<PlayMode>; //播放列表
+// const playMode = inject("playMode") as Ref<PlayMode>; //播放列表
 const playList = inject("playList") as Ref<string[]>; //播放列表
 const playListShuffled = inject("playListShuffled") as Ref<string[]>; //打乱后的播放列表
 const playState = inject("playState") as Ref<boolean>; //播放状态
@@ -15,24 +15,22 @@ const currentDuration = inject("currentDuration") as Ref<number>; //当前音乐
 const volume = inject("volume") as Ref<number>; //音量
 
 /* Enter 搜索 */
-function onkeydown(event: KeyboardEvent) {
-  if (event.key === "Enter") {
-    const input = event.target as HTMLInputElement;
-    const value = input.value;
-    search(value);
-    input.blur(); //失去焦点
-  }
+function onEnter(event: KeyboardEvent) {
+  const input = event.currentTarget as HTMLInputElement;
+  const value = input.value;
+  search(value);
+  input.blur(); //失去焦点
 }
 
 /* 搜索 */
 const searchData = reactive<SearchDataItem[]>([]);
 const searching = ref(false); //是否正在搜索
 function search(keyword: string, page: number = 1) {
-  window?.electron?.search(keyword, page); //搜索
+  window.electron.search(keyword, page); //搜索
   searchData.splice(0, searchData.length); //清空结果
   searching.value = true;
 
-  window?.electron?.onSearchData((data) => {
+  window.electron.onSearchData((data) => {
     console.log("[onSearchData]", data);
     if (data.code != 200 || data.error != "") return;
     searchData.push(...data.data);
@@ -111,7 +109,7 @@ async function playMusic(item: SearchDataItem) {
   playList.value = [item.url]; //设为播放列表
   playListShuffled.value = [item.url]; //设为打乱后的播放列表
   currentSonglist.value = item.title; //设为当前歌单名称
-  playMode.value = PlayMode.loop; //循环播放
+  // playMode.value = PlayMode.loop; //循环播放
   musicController.playMusic(currentMusic.value, {
     volume,
     currentTime,
@@ -123,17 +121,17 @@ async function playMusic(item: SearchDataItem) {
 /* 下载音乐 */
 async function downloadMusic(item: SearchDataItem) {
   if (await isVip(item)) {
-    window?.electron?.openUrl(`https://music.163.com/#/song?id=${item.songid}`);
+    window.electron.openUrl(`https://music.163.com/#/song?id=${item.songid}`);
     return vipDialog();
   }
 
-  window?.electron?.downloadFile(item.url, item.title + ".mp3");
+  window.electron.downloadFile(item.url, item.title + ".mp3");
 }
 
 /* 下载歌词 */
-const txtMime = "data:text/plain,";
+// const txtMime = "data:application/octet-stream,";
 function downloadLyrics(item: SearchDataItem) {
-  window?.electron?.downloadFile(txtMime + item.lrc, item.title + ".lrc");
+  window.electron.downloadText(item.lrc, item.title + ".lrc");
 }
 
 /* vip弹窗 */
@@ -151,9 +149,10 @@ function vipDialog() {
 <template>
   <h1>音乐搜索</h1>
   <input
-    @keydown.stop="onkeydown"
     type="text"
     placeholder="请输入歌曲名或歌手名，回车搜索"
+    @keydown.stop
+    @keydown.enter="onEnter"
   />
   <div class="searching" v-if="searching">搜索中，请等待……</div>
   <div class="result">
@@ -161,24 +160,24 @@ function vipDialog() {
       <span
         @mouseenter="onmouseenter"
         @mouseleave="onmouseleave"
-        data-type="index"
         @click="playMusic(item)"
+        data-type="index"
       >
         {{ index + 1 }}
       </span>
       <span
         @mouseenter="onmouseenter"
         @mouseleave="onmouseleave"
-        data-type="name"
         @click="playMusic(item)"
+        data-type="name"
       >
         {{ item.title }}
       </span>
       <span
         @mouseenter="onmouseenter"
         @mouseleave="onmouseleave"
-        data-type="author"
         @click="playMusic(item)"
+        data-type="author"
       >
         {{ item.author }}
       </span>
@@ -187,7 +186,9 @@ function vipDialog() {
     </template>
   </div>
   <Transition name="fade">
-    <div class="prop" v-if="vipDialogShow">会员歌曲，无法操作</div>
+    <div class="prop" v-if="vipDialogShow" @click="vipDialogShow = false">
+      会员歌曲，无法操作
+    </div>
   </Transition>
 </template>
 
@@ -243,7 +244,9 @@ input {
     height: 3rem;
     margin: 0.5rem;
     @include primaryButtonOutline;
-    border-radius: 100%;
+    & {
+      border-radius: 100%;
+    }
   }
 }
 

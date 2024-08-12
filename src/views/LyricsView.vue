@@ -16,13 +16,13 @@ interface LyricsLineData {
 const data: LyricsLineData[] = reactive([]); //歌词数据
 watch(currentMusic, async () => {
   if (!currentMusic.value) return;
-  const text = await window?.electron?.getLyrics(currentMusic.value);
+  const text = await window.electron.getLyrics(currentMusic.value);
   data.splice(0, data.length); //清空数据
   if (!text) return; //无歌词
 
   const lines = text.trim().split("\n");
   for (const [index, line] of Object.entries(lines)) {
-    const match = line.trim().match(/\[(\d+):(\d+)\.(\d+)\](.+)/);
+    const match = line.trim().match(/\[(\d+):(\d+)\.(\d+)\](.*)/);
     if (!match) continue; //未匹配到则跳过
 
     const [min, sec, mil, text] = match.slice(1);
@@ -32,7 +32,7 @@ watch(currentMusic, async () => {
     };
   }
 
-  // console.log("[LyricsView]", currentMusic.value, lines, data);
+  console.log("[LyricsView]", currentMusic.value, lines, data);
 });
 
 /* 监听鼠标滚动 停止自动滚动 */

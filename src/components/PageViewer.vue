@@ -6,16 +6,26 @@ import RecommendView from "@/views/RecommendView.vue";
 import SearchView from "@/views/SearchView.vue";
 import SettingsView from "@/views/SettingsView.vue";
 
+const pageView = ref<HTMLElement | null>(null);
+
 //切换页面
 enum Pages {
-  songList = "songList",
-  lyrics = "lyrics",
-  recommend = "recommend",
-  search = "search",
-  setting = "setting",
+  songList = 1,
+  lyrics = 2,
+  recommend = 3,
+  search = 4,
+  setting = 5,
 }
 const currentPage = ref(Pages.songList);
 function switchPage(page: Pages) {
+  if (!pageView.value) return;
+
+  if (currentPage.value < page) {
+    pageView.value.className = "pageView pageView-left";
+  } else if (currentPage.value > page) {
+    pageView.value.className = "pageView pageView-right";
+  }
+
   switch (page) {
     case Pages.songList:
       currentPage.value = Pages.songList;
@@ -37,7 +47,7 @@ function switchPage(page: Pages) {
 </script>
 
 <template>
-  <div class="pageView">
+  <div class="pageView" ref="pageView">
     <nav>
       <p
         :class="{ active: currentPage == Pages.songList }"
@@ -70,20 +80,37 @@ function switchPage(page: Pages) {
         设置
       </p>
     </nav>
-    <div class="view" v-show="currentPage == Pages.songList">
-      <SongListView></SongListView>
-    </div>
-    <div class="view" v-show="currentPage == Pages.lyrics">
-      <LyricsView></LyricsView>
-    </div>
-    <div class="view" v-show="currentPage == Pages.recommend">
-      <RecommendView></RecommendView>
-    </div>
-    <div class="view" v-show="currentPage == Pages.search">
-      <SearchView></SearchView>
-    </div>
-    <div class="view" v-show="currentPage == Pages.setting">
-      <SettingsView></SettingsView>
+
+    <div class="views">
+      <Transition name="pageSwitch">
+        <div class="view" v-show="currentPage == Pages.songList">
+          <SongListView></SongListView>
+        </div>
+      </Transition>
+
+      <Transition name="pageSwitch">
+        <div class="view" v-show="currentPage == Pages.lyrics">
+          <LyricsView></LyricsView>
+        </div>
+      </Transition>
+
+      <Transition name="pageSwitch">
+        <div class="view" v-show="currentPage == Pages.recommend">
+          <RecommendView></RecommendView>
+        </div>
+      </Transition>
+
+      <Transition name="pageSwitch">
+        <div class="view" v-show="currentPage == Pages.search">
+          <SearchView></SearchView>
+        </div>
+      </Transition>
+
+      <Transition name="pageSwitch">
+        <div class="view" v-show="currentPage == Pages.setting">
+          <SettingsView></SettingsView>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -96,6 +123,8 @@ function switchPage(page: Pages) {
 
   //导航栏
   nav {
+    flex: none;
+
     @include flex(row);
     justify-content: space-evenly;
     align-items: center;
@@ -125,16 +154,60 @@ function switchPage(page: Pages) {
     }
   }
 
-  //内容区
-  .view {
+  .views {
     flex: auto;
-    height: 100%;
-    /* padding-bottom: 1rem; */
-
     @include flex(column);
-    @include customScrollbar;
-    /* justify-content: center;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    //内容区
+    .view {
+      flex: auto;
+      height: 100%;
+      /* padding-bottom: 1rem; */
+
+      @include flex(column);
+      @include customScrollbar;
+      /* justify-content: center;
     align-items: center; */
+    }
+  }
+}
+
+/* 页面切换动画 */
+.pageSwitch-enter-active,
+.pageSwitch-leave-active {
+  transition:
+    opacity 0.5s,
+    transform 0.5s;
+}
+
+.pageView-left {
+  .pageSwitch-enter-from {
+    position: absolute;
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  .pageSwitch-leave-to {
+    position: absolute;
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+.pageView-right {
+  .pageSwitch-enter-from {
+    position: absolute;
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  .pageSwitch-leave-to {
+    position: absolute;
+    opacity: 0;
+    transform: translateX(100%);
   }
 }
 </style>

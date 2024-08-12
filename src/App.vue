@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref, provide, watch } from "vue";
+import { ref, provide, watch, reactive } from "vue";
 import WindowApp from "@/components/WindowApp.vue";
 import PlayController from "@/components/PlayControllerBar.vue";
 import PageView from "@/components/PageViewer.vue";
 import { PlayMode } from "@/types/PlayMode";
 import { ColorScheme } from "@/types/ColorScheme";
+import { ThemeColor } from "@/types/ThemeColor";
+import { getLightenColor } from "@/ts/colorCalc";
 
 /* 注入依赖 */
+const songLists = reactive<SongLists>([]); //所有歌单列表
 const playMode = ref<PlayMode>(PlayMode.random); //播放模式
 const playList = ref([]); //顺序播放列表
 const playListShuffled = ref([]); //打乱后的播放列表
@@ -17,7 +20,9 @@ const currentTime = ref(0); //当前播放时间
 const currentDuration = ref(0); //当前播放音乐时长
 const volume = ref(0.8); //音量
 const colorScheme = ref<ColorScheme>(ColorScheme.auto); //颜色风格
+const themeColor = ref<ThemeColor>(ThemeColor.red); //主题色
 
+provide("songLists", songLists);
 provide("playMode", playMode);
 provide("playList", playList);
 provide("playListShuffled", playListShuffled);
@@ -28,6 +33,7 @@ provide("currentTime", currentTime);
 provide("currentDuration", currentDuration);
 provide("volume", volume);
 provide("colorScheme", colorScheme);
+provide("themeColor", themeColor);
 
 /* 同步设置 */
 //播放模式
@@ -54,37 +60,56 @@ watch(volume, (newVal) => {
 //颜色模式
 if (
   localStorage.colorScheme &&
-  Object.keys(ColorScheme).includes(localStorage.colorScheme)
+  Object.values(ColorScheme).includes(localStorage.colorScheme)
 )
   colorScheme.value = localStorage.colorScheme;
 localStorage.colorScheme = colorScheme.value;
 
 watch(colorScheme, (newVal) => {
   localStorage.colorScheme = newVal;
-  if (newVal == ColorScheme.auto) updateColor();
-  else rootElem.dataset.colorScheme = newVal;
+  updateScheme();
+});
+
+//主题色
+if (
+  localStorage.themeColor &&
+  Object.values(ThemeColor).includes(localStorage.themeColor)
+) {
+  themeColor.value = localStorage.themeColor;
+  document.documentElement.style.setProperty("--color-theme", themeColor.value);
+  document.documentElement.style.setProperty(
+    "--color-theme-mute",
+    getLightenColor(themeColor.value, 0.4),
+  );
+  document.documentElement.style.setProperty(
+    "--color-theme-soft",
+    getLightenColor(themeColor.value, 0.8),
+  );
+}
+localStorage.themeColor = themeColor.value;
+
+watch(themeColor, (newVal) => {
+  localStorage.themeColor = newVal;
 });
 
 /* 颜色模式 */
-const rootElem = document.querySelector(":root") as HTMLElement; //根元素
-
 //更新颜色风格
-function updateColor() {
-  if (colorScheme.value != ColorScheme.auto) return;
+function updateScheme() {
+  if (colorScheme.value != ColorScheme.auto)
+    return (document.documentElement.dataset.colorScheme = colorScheme.value);
 
-  if (matchMedia("(prefers-color-scheme: dark)").matches) {
-    rootElem.dataset.colorScheme = "dark";
-  } else {
-    rootElem.dataset.colorScheme = "light";
-  }
+  const theme = matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+  document.documentElement.dataset.colorScheme = theme;
 }
 
 //监听颜色风格改变
 matchMedia("(prefers-color-scheme: dark)").addEventListener(
   "change",
-  updateColor,
+  updateScheme,
 );
-updateColor();
+updateScheme();
 </script>
 
 <template>

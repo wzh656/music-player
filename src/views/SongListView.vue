@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { inject, ref, type Ref } from "vue";
+import { inject, ref, watch, type Reactive, type Ref } from "vue";
 import { PlayMode } from "@/types/PlayMode"; //播放模式
 import * as musicController from "@/ts/musicController"; //音乐播放控制器
 import shuffleArray from "@/ts/shuffleArray"; //原地打乱数组
 
 /* 获取依赖 */
+const songLists = inject("songLists") as Reactive<SongLists>; //歌单列表
 const playMode = inject("playMode") as Ref<PlayMode>; //播放列表
 const playList = inject("playList") as Ref<string[]>; //播放列表
 const playListShuffled = inject("playListShuffled") as Ref<string[]>; //打乱后的播放列表
@@ -16,9 +17,13 @@ const currentDuration = inject("currentDuration") as Ref<number>; //当前音乐
 const volume = inject("volume") as Ref<number>; //音量大小
 
 /* 获取歌单列表 */
-let songLists: Ref<SongLists | null> = ref(null);
-window?.electron?.getSongLists().then((list: SongLists) => {
-  songLists.value = list;
+window.electron.getSongLists().then((list: SongLists) => {
+  songLists.splice(0, songLists.length);
+  songLists.push(...list);
+});
+watch(songLists, () => {
+  console.log("[updateSongLists]", songLists);
+  window.electron.updateSongLists(JSON.stringify(songLists));
 });
 
 /* 播放音乐 */
@@ -33,13 +38,16 @@ function playMusic(music: string) {
 }
 
 /* 左键播放歌单 */
-async function songlistPlay(listName: string) {
-  if (!songLists.value) throw new Error("[songlistPlay] 歌单列表为空");
+const currentSonglistIndex = ref<number>(-1); //当前歌单索引
+async function songlistPlay(index: number) {
+  if (!songLists) throw new Error("[songlistPlay] 歌单列表为空");
 
-  const songs = await window?.electron?.getSongListSongs(listName); //获取所有歌曲
-  songLists.value[listName].num = songs.length; //更新歌单歌曲数量
+  const songListName = songLists[index].name; //歌单名称
+  const songs = await window.electron.getSongListSongs(songListName); //获取所有歌曲
+  songLists[index].num = songs.length; //更新歌单歌曲数量
 
-  currentSonglist.value = listName; //设为当前歌单名称
+  currentSonglistIndex.value = index; //设为当前歌单索引
+  currentSonglist.value = songListName; //设为当前歌单名称
   playList.value = songs; //设为播放歌单
   playListShuffled.value = shuffleArray([...songs]); //设为打乱后的播放歌单
 
@@ -66,14 +74,14 @@ function songlistMenu(event: MouseEvent, name: string) {
   <div v-if="!songLists">歌单加载中...</div>
   <ul v-if="songLists">
     <li
-      v-for="(songInfo, listName) in songLists"
-      :key="listName"
-      :class="{ active: listName == currentSonglist }"
-      @click="songlistPlay(listName as string)"
-      @contextmenu="songlistMenu($event, listName as string)"
+      v-for="(songList, index) in songLists"
+      :key="index"
+      :class="{ active: currentSonglistIndex == index }"
+      @click="songlistPlay(index)"
+      @contextmenu.prevent="songlistMenu($event, songList.name as string)"
     >
-      {{ listName }}
-      <span v-if="songInfo.num">({{ songInfo.num }})</span>
+      {{ songList.name }}
+      <span v-if="songList.num">({{ songList.num }})</span>
     </li>
   </ul>
 </template>

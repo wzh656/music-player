@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { inject, ref, type Ref } from "vue";
-import { PlayMode } from "@/types/PlayMode";
+// import { PlayMode } from "@/types/PlayMode";
 import * as musicController from "@/ts/musicController"; //音乐播放控制器
 
 /* 获取依赖 */
-const playMode = inject("playMode") as Ref<PlayMode>; //播放列表
+// const playMode = inject("playMode") as Ref<PlayMode>; //播放列表
 const playList = inject("playList") as Ref<string[]>; //播放列表
 const playListShuffled = inject("playListShuffled") as Ref<string[]>; //打乱后的播放列表
 const playState = inject("playState") as Ref<boolean>; //播放状态
@@ -83,7 +83,7 @@ function playMusic() {
   playList.value = [songUrl.value]; //设为播放列表
   playListShuffled.value = [songUrl.value]; //设为打乱后的播放列表
   currentSonglist.value = songName.value; //设为当前歌单名称
-  playMode.value = PlayMode.loop; //循环播放
+  // playMode.value = PlayMode.loop; //循环播放
   musicController.playMusic(currentMusic.value, {
     volume,
     currentTime,
@@ -94,7 +94,7 @@ function playMusic() {
 
 /* 下载音乐 */
 function download() {
-  window?.electron?.downloadFile(songUrl.value, songName.value + ".mp3");
+  window.electron.downloadFile(songUrl.value, songName.value + ".mp3");
 }
 
 /* 打开网页 */
@@ -103,7 +103,7 @@ function openWeb() {
   if (!matchResult) return;
   const songId = matchResult[1];
   console.log(`https://music.163.com/#/song?id=${songId}`);
-  window?.electron?.openUrl(`https://music.163.com/#/song?id=${songId}`);
+  window.electron.openUrl(`https://music.163.com/#/song?id=${songId}`);
 }
 </script>
 

@@ -1,7 +1,16 @@
-import { app, BrowserWindow, ipcMain, Menu, shell, session } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  shell,
+  session,
+  dialog,
+} from "electron";
 import process from "process";
 import path from "node:path";
 import fs from "node:fs";
+import request from "request";
 // import { fileURLToPath } from "url";
 
 // const __filename = fileURLToPath(import.meta.url);
@@ -10,8 +19,25 @@ const vueDevToolsPath = path.resolve("./extensions/vue-devtools"); //必须绝�
 
 let mainWindow;
 
+/* 尝试解析歌单列表 */
+function tryPraseSongList() {
+  const text = fs.readFileSync(songListsPath);
+  let songList;
+  try {
+    songList = JSON.parse(text);
+  } catch (err) {
+    dialog.showMessageBox(mainWindow, {
+      type: "error",
+      title: "歌单列表解析失败",
+      message: "歌单列表解析失败，请检查文件格式",
+    });
+    songList = {};
+  }
+  return songList;
+}
+
 /* 循环读取列表中文件 */
-function readRecursively(paths, fileList = []) {
+function readRecursively(paths, fileList = new Set()) {
   for (const filePath of paths) {
     if (fs.statSync(filePath).isDirectory()) {
       const newPaths = fs
@@ -19,17 +45,17 @@ function readRecursively(paths, fileList = []) {
         .map((file) => path.join(filePath, file)); //新路径
       readRecursively(newPaths, fileList); //文件夹 递归读取
     } else {
-      fileList.push(filePath); //文件 加入列表
+      fileList.add(filePath); //文件 加入列表
     }
   }
-  return fileList;
+  return [...fileList];
 }
 
 /* 过滤后缀 */
-const MUSIC_SUFFIXS = [".mp3", ".wav", ".flac", ".aac"];
+const MUSIC_SUFFIXS = ["mp3", "flac", "wav", "aac", "m4a"]; //音乐后缀
 function filterEndsWith(paths, suffixs) {
   return paths.filter((path) =>
-    suffixs.some((suffix) => path.endsWith(suffix)),
+    suffixs.some((suffix) => path.endsWith("." + suffix)),
   );
 }
 
@@ -53,25 +79,29 @@ function addEventListener() {
   ipcMain.on("switchMaximum", (event) => {
     const webContents = event.sender;
     const win = BrowserWindow.fromWebContents(webContents); //获取发出事件的窗口
-    if (win.isMaximized()) {
-      win.unmaximize();
-    } else {
-      win.maximize();
-    }
+    win.isMaximized() ? win.unmaximize() : win.maximize();
   });
 
   //获取歌单列表
   ipcMain.handle("getSongLists", () => {
     const text = fs.readFileSync(songListsPath);
-    console.log("[getSongLists]", JSON.parse(text));
-    return JSON.parse(text);
+    const songList = tryPraseSongList(text); //尝试解析歌单列表
+    console.log("[getSongLists]", songList);
+    return songList;
+  });
+
+  //更新歌单列表
+  ipcMain.on("updateSongLists", (event, songListsStr) => {
+    console.log("[updateSongLists]", songListsStr);
+    fs.writeFileSync(songListsPath, songListsStr);
   });
 
   //获取歌单歌曲
   ipcMain.handle("getSongListSongs", (event, name) => {
     const text = fs.readFileSync(songListsPath);
-    const songList = JSON.parse(text);
-    const paths = songList[name].paths;
+    const songList = tryPraseSongList(text); //尝试解析歌单列表
+    const index = songList.findIndex((item) => item.name === name);
+    const paths = songList[index].paths;
     const files = readRecursively(paths); //循环读取列表中文件
     console.log("[getSongListSongs]", name);
     return filterEndsWith(files, MUSIC_SUFFIXS); //过滤后缀
@@ -80,18 +110,52 @@ function addEventListener() {
   //获取歌词
   ipcMain.handle("getLyrics", async (event, path) => {
     const lyricsPath = path.slice(0, -4) + ".lrc";
-    console.log("[getLyrics]", path);
+    console.log("[getLyrics]", lyricsPath);
     if (!fs.existsSync(lyricsPath)) return null; //不存在歌词文件
     return fs.readFileSync(lyricsPath).toString();
   });
 
   //下载文件
   ipcMain.on("downloadFile", async (event, url, name) => {
-    mainWindow.webContents.downloadURL(url); //下载文件
+    console.log("[downloadFile]", url, name);
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title: "请选择下载路径",
+      properties: ["openDirectory", "createDirectory"],
+    });
+    if (canceled) return; //取消下载
+    const path = filePaths[0];
+    const downloadPath = path + "/" + name;
+
+    const process = fs.createWriteStream(downloadPath);
+    request({
+      url,
+      timeout: 10000,
+    }).pipe(process);
+    process.on("finish", () => {
+      console.log("[downloadFile] finish", downloadPath);
+    });
+    process.on("error", (err) => {
+      console.log("[downloadFile] error", downloadPath, err);
+    });
+  });
+
+  //下载文本文件
+  ipcMain.on("downloadText", async (event, text, name) => {
+    console.log("[downloadText]", name);
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title: "请选择下载路径",
+      properties: ["openDirectory", "createDirectory"],
+    });
+    if (canceled) return; //取消下载
+    const path = filePaths[0];
+    const downloadPath = path + "/" + name;
+
+    fs.writeFileSync(downloadPath, text); //写入文件
   });
 
   //打开外部链接
   ipcMain.on("openUrl", async (event, url) => {
+    console.log("[openUrl]", url);
     shell.openExternal(url); //打开外部链接
   });
 
@@ -99,6 +163,7 @@ function addEventListener() {
   let searchWindow;
   const apiUrl = "https://www.yyssq.cn/";
   ipcMain.on("search", async (event, keyword, page) => {
+    console.log("[search]", keyword, page);
     searchWindow = new BrowserWindow({
       width: 600,
       height: 400,
@@ -121,10 +186,36 @@ function addEventListener() {
   });
 
   ipcMain.on("searchData", (event, data) => {
-    console.log("searchData", data);
+    console.log("[searchData]", data);
     mainWindow.webContents.send("searchData", data); //发送搜索结果
     searchWindow.destroy(); //关闭搜索窗口
     searchWindow = null;
+  });
+
+  //浏览文件
+  ipcMain.handle("browseFiles", async (event, path) => {
+    console.log("[browseFiles]", path);
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title: "选择文件（可多选）",
+      properties: ["openFile", "multiSelections"],
+      defaultPath: path,
+      filters: [
+        { name: "Music", extensions: MUSIC_SUFFIXS },
+        { name: "All Files", extensions: ["*"] },
+      ],
+    });
+    return { canceled, filePaths };
+  });
+
+  //浏览文件夹
+  ipcMain.handle("browseDir", async (event, path) => {
+    console.log("[browseDir]", path);
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title: "选择文件夹",
+      properties: ["openDirectory"],
+      defaultPath: path,
+    });
+    return { canceled, filePaths };
   });
 }
 

@@ -15,6 +15,7 @@
     "electron:serve": "start pnpm dev&start electron ."
   },
   "dependencies": {
+    "request": "^2.88.2",
     "vue": "^3.4.29"
   },
   "devDependencies": {

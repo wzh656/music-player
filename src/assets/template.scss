@@ -18,6 +18,20 @@
   }
 }
 
+//自定义按钮
+@mixin customButton($color: var(--color-theme)) {
+  background-color: $color;
+  color: var(--vt-c-white);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: darken($color, 10%);
+  }
+}
+
 //主题线框按钮
 @mixin primaryButtonOutline {
   background-color: transparent;
@@ -35,11 +49,28 @@
   }
 }
 
+//自定义线框按钮
+@mixin customButtonOutline($color: var(--color-theme)) {
+  background-color: transparent;
+  color: $color;
+  border: 2px solid $color;
+  border-radius: 5px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+
+  &:hover {
+    background-color: $color;
+    color: var(--vt-c-white);
+  }
+}
+
 //主题输入框
 @mixin primaryInput {
   background-color: transparent;
   color: var(--color-text);
-  border: 2px solid var(--color-text);
+  border: 2px solid var(--color-border);
   outline: none;
   border-radius: 5px;
   transition: border-color 0.3s ease;

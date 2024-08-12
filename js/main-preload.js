@@ -6,11 +6,16 @@ contextBridge.exposeInMainWorld("electron", {
   onChangeMaximum: (callback) =>
     ipcRenderer.on("changeMaximumState", (event, value) => callback(value)), //监听最大化状态改变
   getSongLists: () => ipcRenderer.invoke("getSongLists"), //获取歌单列表
+  updateSongLists: (songListsStr) =>
+    ipcRenderer.send("updateSongLists", songListsStr), //更新歌单列表
   getSongListSongs: (name) => ipcRenderer.invoke("getSongListSongs", name), //获取歌单歌曲
   getLyrics: (path) => ipcRenderer.invoke("getLyrics", path), //获取歌词
   downloadFile: (url, name) => ipcRenderer.send("downloadFile", url, name), //下载文件
+  downloadText: (text, name) => ipcRenderer.send("downloadText", text, name), //下载文本文件
   openUrl: (url) => ipcRenderer.send("openUrl", url), //打开链接
   search: (keyword, page) => ipcRenderer.send("search", keyword, page), //获取歌词
   onSearchData: (callback) =>
     ipcRenderer.on("searchData", (event, data) => callback(data)), //监听搜索结果
+  browseFiles: (path) => ipcRenderer.invoke("browseFiles", path), //浏览路径
+  browseDir: (path) => ipcRenderer.invoke("browseDir", path), //浏览路径
 });

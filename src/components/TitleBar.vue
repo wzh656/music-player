@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { inject, ref, watch, type Ref } from "vue";
 import closeIcon from "@/assets/icons/closeIcon.vue";
 import maximizeIcon from "@/assets/icons/maximizeIcon.vue";
 import minimizeIcon from "@/assets/icons/minimizeIcon.vue";
 import unmaximizeIcon from "@/assets/icons/unmaximizeIcon.vue";
+import { ThemeColor } from "@/types/ThemeColor";
+import { hexToRgb, rgbToHsl } from "@/ts/colorCalc";
 
+/* 获取依赖 */
+const themeColor = inject("themeColor") as Ref<ThemeColor>; //色彩模式
+
+/* 窗口最大化 */
+//是否最大化
 const isMaximized = ref(false);
 
 //最小化出窗口
@@ -19,20 +26,32 @@ function switchMaximum() {
 }
 
 //最大化状态切换
-if (window?.electron?.onChangeMaximum)
-  window.electron.onChangeMaximum((value: boolean) => {
-    isMaximized.value = value;
-  });
+// if (window?.electron?.onChangeMaximum)
+window.electron.onChangeMaximum((value: boolean) => {
+  isMaximized.value = value;
+});
 
 //关闭窗口
 function close() {
   window.close();
 }
+
+/* logo颜色 */
+const logoElem = ref<HTMLElement | null>(null);
+watch(themeColor, (value) => {
+  if (!logoElem.value) return;
+  const rgb = hexToRgb(value);
+  const hsl = rgbToHsl(rgb);
+  let deg = hsl[0] * 360 - 0.9937611408199644;
+  if (deg < 0) deg += 360;
+  if (deg > 360) deg -= 360;
+  logoElem.value.style.filter = `hue-rotate(${deg}deg)`;
+});
 </script>
 
 <template>
   <header>
-    <img class="logo" src="/favicon.ico" />
+    <img class="logo" src="/favicon.ico" ref="logoElem" />
     <div class="title"><slot></slot></div>
     <div class="buttons">
       <minimizeIcon @click="minimize" />
@@ -59,6 +78,7 @@ header {
   .logo {
     padding: 0.5rem;
     border-radius: 50%;
+    transition: filter 0.3s;
   }
 
   //窗口标题
