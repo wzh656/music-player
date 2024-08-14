@@ -1,39 +1,34 @@
-# music player
+# my-app
 
-A simple local music player developed with electron.
+An Electron application with Vue and TypeScript
 
 ## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin)
 
 ## Project Setup
 
-```sh
-pnpm install
+### Install
+
+```bash
+$ pnpm install
 ```
 
-### Compile and Hot-Reload for Development
+### Development
 
-```sh
-pnpm dev
+```bash
+$ pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Build
 
-```sh
-pnpm build
-```
+```bash
+# For windows
+$ pnpm build:win
 
-### Lint with [ESLint](https://eslint.org/)
+# For macOS
+$ pnpm build:mac
 
-```sh
-pnpm lint
+# For Linux
+$ pnpm build:linux
 ```

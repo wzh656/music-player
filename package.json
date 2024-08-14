@@ -1,46 +1,52 @@
 {
-  "name": "music-player",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "main": "main.js",
+  "name": "gy-music-player",
+  "version": "1.1.0",
+  "description": "A simple local music player",
+  "main": "./out/main/index.mjs",
+  "author": "wzh656",
+  "homepage": "https://electron-vite.org",
   "scripts": {
-    "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build --force",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/",
-    "electron:serve": "start pnpm dev&start electron ."
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build:unpack": "npm run build && electron-builder --dir",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "npm run build && electron-builder --mac",
+    "build:linux": "npm run build && electron-builder --linux"
   },
   "dependencies": {
-    "request": "^2.88.2",
-    "vue": "^3.4.29"
+    "@electron-toolkit/preload": "^3.0.0",
+    "@electron-toolkit/utils": "^3.0.0",
+    "electron-updater": "^6.1.7",
+    "music-metadata": "^10.1.0",
+    "request": "^2.88.2"
   },
   "devDependencies": {
-    "@rushstack/eslint-patch": "^1.8.0",
-    "@tsconfig/node20": "^20.1.4",
-    "@types/node": "^20.14.5",
+    "@electron-toolkit/eslint-config": "^1.0.2",
+    "@electron-toolkit/eslint-config-ts": "^2.0.0",
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@rushstack/eslint-patch": "^1.10.3",
+    "@types/node": "^20.14.8",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/eslint-config-typescript": "^13.0.0",
-    "@vue/tsconfig": "^0.5.1",
-    "cz-conventional-changelog": "^3.3.0",
-    "electron": "^31.3.1",
+    "electron": "^31.0.2",
+    "electron-builder": "^24.13.3",
+    "electron-vite": "^2.3.0",
     "eslint": "^8.57.0",
-    "eslint-plugin-vue": "^9.23.0",
-    "npm-run-all2": "^6.2.0",
-    "prettier": "^3.2.5",
+    "eslint-plugin-vue": "^9.26.0",
+    "prettier": "^3.3.2",
     "sass": "^1.77.8",
     "sass-loader": "^16.0.0",
-    "typescript": "~5.4.0",
+    "typescript": "^5.5.2",
     "vite": "^5.3.1",
-    "vue-tsc": "^2.0.21"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+    "vue": "^3.4.30",
+    "vue-tsc": "^2.0.22"
   }
 }
