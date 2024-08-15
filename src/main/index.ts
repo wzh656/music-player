@@ -7,13 +7,9 @@ import {
 } from "electron";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import path from "node:path";
-// import fs from "node:fs";
-import process from "process"; //下载文件
-// import request from "request"; //下载文件
-// import * as parser from "music-metadata"; //获取音频文件信息
-// import searchInject from "./inject/searchInject"; //注入代码 string
+import process from "process"; //判断平台
 
-import { icon, iconImage } from "./loadImages";
+import { icon, iconImage } from "./loadImages"; //加载图标
 
 import { mainWindow } from "./settings/windows"; //主窗口
 import { willQuit } from "./settings/willQuit"; //是否即将关闭

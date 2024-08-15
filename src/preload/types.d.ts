@@ -29,6 +29,14 @@ declare global {
     error: string;
   }
 
+  /* B站搜索结果 */
+  type SearchDataBilibili = {
+    cid: number;
+    part: string;
+    page: number;
+    duration: number;
+  }[];
+
   /* 浏览路径结果 */
   interface BrowsePathData {
     canceled: boolean;
@@ -58,9 +66,13 @@ declare global {
 
       openUrl: (url: string) => void;
 
-      search: (keyword: string, platform: MusicPlatform, page: number) => void;
-      onSearchData: (callback: (data: SearchData) => void) => void;
-      searchBilibili: (avid: number) => void;
+      search: (
+        keyword: string,
+        platform: MusicPlatform,
+        page: number,
+      ) => Promise<SearchData>;
+      // onSearchData: (callback: (data: SearchData) => void) => void;
+      searchBilibili: (avid: number) => Promise<SearchDataBilibili | null>;
 
       browseFiles: () => Promise<BrowsePathData>;
       browseDir: (path?: string) => Promise<BrowsePathData>;

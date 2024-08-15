@@ -41,19 +41,30 @@ function onEnterBilibili(event: KeyboardEvent) {
 /* 搜索 */
 const searchData = reactive<SearchDataItem[]>([]);
 const searching = ref(false); //是否正在搜索
-function search(keyword: string, page: number = 1) {
-  window.electron.search(keyword, currentPlatform.value, page); //搜索
-  searchData.splice(0, searchData.length); //清空结果
-  searching.value = true;
+async function search(keyword: string, page: number = 1) {
+  searching.value = true; //正在搜索
+
+  const data = await window.electron.search(
+    keyword,
+    currentPlatform.value,
+    page,
+  ); //搜索
+  searching.value = false; //搜索完成
+  if (data.code != 200 || data.error != "") return;
+
+  //更新搜索结果
+  searchData.splice(0, searchData.length);
+  searchData.push(...data.data);
 }
-window.electron.onSearchData((data) => {
+/* window.electron.onSearchData((data) => {
   console.log("[onSearchData]", data);
   if (data.code != 200 || data.error != "") return;
   searchData.push(...data.data);
   searching.value = false;
-});
+}); */
 
 /* bilibili搜索 */
+const searchDataBilibili = reactive<SearchDataBilibili>([]);
 async function searchBilibili(value: string) {
   searching.value = true;
 
@@ -64,7 +75,14 @@ async function searchBilibili(value: string) {
     return alert("无效的视频链接或bvid");
   }
   const avid = bv2av(bvid as `BV1${string}`);
-  window.electron.searchBilibili(avid);
+  const data = await window.electron.searchBilibili(avid);
+
+  searching.value = false;
+
+  if (data == null) return alert("获取视频信息失败");
+
+  searchDataBilibili.splice(0, searchDataBilibili.length);
+  searchDataBilibili.push(...data);
 }
 
 /* 高亮 */
@@ -174,6 +192,19 @@ function vipDialog() {
   if (vipDialogId) clearTimeout(vipDialogId);
   vipDialogId = window.setTimeout(() => (vipDialogShow.value = false), 2000);
 }
+
+/* 格式化时间 */
+function formatTime(sec: number) {
+  const minutes = ~~((sec / 60) % 60) + "";
+  const seconds = ~~(sec % 60) + "";
+  if (sec > 3600) {
+    //超过1h的音频显示小时
+    const hours = ~~(sec / 3600) + "";
+    return `${hours}:${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
+  } else {
+    return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
+  }
+}
 </script>
 
 <template>
@@ -229,7 +260,7 @@ function vipDialog() {
     @keydown.enter="onEnterBilibili"
   />
   <div v-if="searching" class="searching">搜索中，请等待……</div>
-  <div class="result">
+  <div v-if="currentPlatform != MusicPlatform.BL" class="result">
     <template v-for="(item, index) in searchData" :key="item.songid">
       <span
         data-type="index"
@@ -257,6 +288,33 @@ function vipDialog() {
       </span>
       <button @click="downloadMusic(item)">下载音乐</button>
       <button @click="downloadLyrics(item)">下载歌词</button>
+    </template>
+  </div>
+  <div v-if="currentPlatform == MusicPlatform.BL" class="result">
+    <template v-for="item in searchDataBilibili" :key="item.page">
+      <span
+        data-type="index"
+        @mouseenter="onmouseenter"
+        @mouseleave="onmouseleave"
+      >
+        {{ item.page }}
+      </span>
+      <span
+        data-type="name"
+        @mouseenter="onmouseenter"
+        @mouseleave="onmouseleave"
+      >
+        {{ item.part }}
+      </span>
+      <span
+        data-type="author"
+        @mouseenter="onmouseenter"
+        @mouseleave="onmouseleave"
+      >
+        {{ formatTime(item.duration) }}
+      </span>
+      <button @click="">下载音乐</button>
+      <button @click="">下载歌词</button>
     </template>
   </div>
   <Transition name="fade">

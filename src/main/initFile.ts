@@ -1,12 +1,15 @@
 /* 初始化文件 */
 import fs from "node:fs";
-import path from "node:path";
-import { songListsPath } from "./settings/filePath"; //文件路径
+import { userdataPath, songListsPath, cookiesPath } from "./settings/filePath"; //文件路径
 
 export default function () {
-  if (!fs.existsSync(path.dirname(songListsPath)))
-    fs.mkdirSync(path.dirname(songListsPath));
+  //用户数据文件夹
+  if (!fs.existsSync(userdataPath)) fs.mkdirSync(userdataPath);
 
+  //歌单列表文件
   if (!fs.existsSync(songListsPath))
     fs.writeFileSync(songListsPath, JSON.stringify([]));
+
+  //cookie文件
+  if (!fs.existsSync(cookiesPath)) fs.writeFileSync(cookiesPath, "");
 }

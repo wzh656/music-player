@@ -85,7 +85,7 @@
 }
 
 //自定义滚动条
-@mixin customScrollbar($width: 5px) {
+@mixin customScrollbar($width: 8px) {
   overflow-y: overlay;
 
   &::-webkit-scrollbar {

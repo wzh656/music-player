@@ -9,7 +9,7 @@ export default defineConfig({
       rollupOptions: {
         input: {
           index: resolve(__dirname, "src/main/index.ts"),
-          searchInject: resolve(__dirname, "src/main/searchInject.ts"),
+          // searchInject: resolve(__dirname, "src/main/searchInject.ts"),
         },
         output: {
           format: "es",
