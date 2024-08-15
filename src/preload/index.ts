@@ -40,6 +40,7 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.send("search", keyword, page), //搜索
   onSearchData: (callback: (data: SearchData) => void) =>
     ipcRenderer.on("searchData", (event, data: SearchData) => callback(data)), //监听搜索结果
+  searchBilibili: (avid: number) => ipcRenderer.send("searchBilibili", avid), //搜索
 
   /* 选择路径操作 */
   browseFiles: (path: string) => ipcRenderer.invoke("browseFiles", path), //浏览路径

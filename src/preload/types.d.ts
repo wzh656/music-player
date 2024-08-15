@@ -1,4 +1,7 @@
+import { MusicPlatform } from "@/types/MusicPlatform"; //音乐平台
+
 declare global {
+  /* 歌单结构 */
   type SongLists = SongList[];
   interface SongList {
     name: string; //歌单名称
@@ -55,8 +58,9 @@ declare global {
 
       openUrl: (url: string) => void;
 
-      search: (keyword: string, page: number) => void;
+      search: (keyword: string, platform: MusicPlatform, page: number) => void;
       onSearchData: (callback: (data: SearchData) => void) => void;
+      searchBilibili: (avid: number) => void;
 
       browseFiles: () => Promise<BrowsePathData>;
       browseDir: (path?: string) => Promise<BrowsePathData>;

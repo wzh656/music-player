@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { inject, nextTick, reactive, ref, type Ref } from "vue";
 // import { PlayMode } from "@/types/PlayMode";
+import { MusicPlatform } from "@/types/MusicPlatform"; //音乐平台
 import * as musicController from "@/ts/musicController"; //音乐播放控制器
+import { getBvid, bv2av } from "@/ts/bilibiliAPI";
 
 /* 获取依赖 */
 // const playMode = inject("playMode") as Ref<PlayMode>; //播放列表
@@ -15,6 +17,12 @@ const currentDuration = inject("currentDuration") as Ref<number>; //当前音乐
 const currentLyrics = inject("currentLyrics") as Ref<string | null>; //当前音乐歌词
 const volume = inject("volume") as Ref<number>; //音量
 
+/* 切换平台 */
+const currentPlatform = ref<MusicPlatform>(MusicPlatform.WY);
+function switchPlatform(platform: MusicPlatform) {
+  currentPlatform.value = platform;
+}
+
 /* Enter 搜索 */
 function onEnter(event: KeyboardEvent) {
   const input = event.currentTarget as HTMLInputElement;
@@ -23,20 +31,40 @@ function onEnter(event: KeyboardEvent) {
   input.blur(); //失去焦点
 }
 
+function onEnterBilibili(event: KeyboardEvent) {
+  const input = event.currentTarget as HTMLInputElement;
+  const value = input.value.trim();
+  searchBilibili(value);
+  input.blur(); //失去焦点
+}
+
 /* 搜索 */
 const searchData = reactive<SearchDataItem[]>([]);
 const searching = ref(false); //是否正在搜索
 function search(keyword: string, page: number = 1) {
-  window.electron.search(keyword, page); //搜索
+  window.electron.search(keyword, currentPlatform.value, page); //搜索
   searchData.splice(0, searchData.length); //清空结果
   searching.value = true;
+}
+window.electron.onSearchData((data) => {
+  console.log("[onSearchData]", data);
+  if (data.code != 200 || data.error != "") return;
+  searchData.push(...data.data);
+  searching.value = false;
+});
 
-  window.electron.onSearchData((data) => {
-    console.log("[onSearchData]", data);
-    if (data.code != 200 || data.error != "") return;
-    searchData.push(...data.data);
+/* bilibili搜索 */
+async function searchBilibili(value: string) {
+  searching.value = true;
+
+  const bvid = await getBvid(value);
+  console.log(bvid);
+  if (!bvid || bvid.length != 12 || !bvid.startsWith("BV1")) {
     searching.value = false;
-  });
+    return alert("无效的视频链接或bvid");
+  }
+  const avid = bv2av(bvid as `BV1${string}`);
+  window.electron.searchBilibili(avid);
 }
 
 /* 高亮 */
@@ -150,11 +178,55 @@ function vipDialog() {
 
 <template>
   <h1>音乐搜索</h1>
+  <div class="platform">
+    <div
+      class="radio"
+      :active="currentPlatform == MusicPlatform.WY"
+      @click="switchPlatform(MusicPlatform.WY)"
+    >
+      <div></div>
+      <span>网易云</span>
+    </div>
+    <div
+      class="radio"
+      :active="currentPlatform == MusicPlatform.KG"
+      @click="switchPlatform(MusicPlatform.KG)"
+    >
+      <div></div>
+      <span>酷狗</span>
+    </div>
+    <div
+      class="radio"
+      :active="currentPlatform == MusicPlatform.QQ"
+      @click="switchPlatform(MusicPlatform.QQ)"
+    >
+      <div></div>
+      <span>QQ音乐</span>
+    </div>
+    <div
+      class="radio"
+      :active="currentPlatform == MusicPlatform.BL"
+      @click="switchPlatform(MusicPlatform.BL)"
+    >
+      <div></div>
+      <span>Bilibili</span>
+    </div>
+  </div>
   <input
+    v-if="currentPlatform != MusicPlatform.BL"
     type="text"
     placeholder="请输入歌曲名或歌手名，回车搜索"
+    spellcheck="false"
     @keydown.stop
     @keydown.enter="onEnter"
+  />
+  <input
+    v-if="currentPlatform == MusicPlatform.BL"
+    type="text"
+    placeholder="请输入B站视频链接或bvid，回车搜索"
+    spellcheck="false"
+    @keydown.stop
+    @keydown.enter="onEnterBilibili"
   />
   <div v-if="searching" class="searching">搜索中，请等待……</div>
   <div class="result">
@@ -199,6 +271,31 @@ function vipDialog() {
 
 h1 {
   text-align: center;
+}
+
+//单选框
+.platform {
+  @include flex(row);
+  justify-content: center;
+
+  .radio {
+    @include flex(row);
+    align-items: center;
+    padding: 0 0.5rem;
+    cursor: pointer;
+
+    div {
+      width: 1rem;
+      height: 1rem;
+      margin: 0 0.25rem;
+      border-radius: 100%;
+      border: 3px solid var(--color-theme);
+      transition: background-color 0.3s;
+    }
+    &[active="true"] div {
+      background-color: var(--color-theme);
+    }
+  }
 }
 
 //搜索框

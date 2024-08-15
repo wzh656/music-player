@@ -1,7 +1,7 @@
 export default `
 console.log("[search-inject]", typeof $, window.electron);
 
-function onSearch(input, page) {
+function onSearch(input, platform, page) {
   console.log("[onSearch]", input, page);
   $.ajax({
     type: "POST",
@@ -10,7 +10,7 @@ function onSearch(input, page) {
     data: {
       input,
       filter: "name",
-      type: "netease",
+      type: platform,
       page,
     },
     dataType: "json",
