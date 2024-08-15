@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref, watch, type Ref } from "vue";
+import { inject, onMounted, ref, watch, type Ref } from "vue";
 import closeIcon from "@/assets/icons/closeIcon.vue";
 import maximizeIcon from "@/assets/icons/maximizeIcon.vue";
 import minimizeIcon from "@/assets/icons/minimizeIcon.vue";
@@ -38,15 +38,17 @@ function close() {
 
 /* logo颜色 */
 const logoElem = ref<HTMLElement | null>(null);
-watch(themeColor, (value) => {
+function updateLogoColor() {
   if (!logoElem.value) return;
-  const rgb = hexToRgb(value);
+  const rgb = hexToRgb(themeColor.value);
   const hsl = rgbToHsl(rgb);
   let deg = hsl[0] * 360 - 0.9937611408199644;
   if (deg < 0) deg += 360;
   if (deg > 360) deg -= 360;
   logoElem.value.style.filter = `hue-rotate(${deg}deg)`;
-});
+}
+watch(themeColor, updateLogoColor);
+onMounted(updateLogoColor);
 </script>
 
 <template>

@@ -275,7 +275,7 @@ function initTray() {
   const tray = new Tray(iconImage);
   const contextMenu = Menu.buildFromTemplate([
     { label: "打开应用", click: () => mainWindow!.show() },
-    { label: "退出应用", role: "quit", click: () => app.quit() },
+    { label: "退出应用", role: "quit", click: () => app.exit() },
   ]);
 
   tray.on("click", () => {
