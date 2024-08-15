@@ -271,11 +271,18 @@ function addEventListener() {
 }
 
 /* 创建托盘 */
+let willQuit = false;
 function initTray() {
   const tray = new Tray(iconImage);
   const contextMenu = Menu.buildFromTemplate([
     { label: "打开应用", click: () => mainWindow!.show() },
-    { label: "退出应用", role: "quit", click: () => app.exit() },
+    {
+      label: "退出应用",
+      click: () => {
+        willQuit = true; //防止阻止关闭
+        app.quit();
+      },
+    },
   ]);
 
   tray.on("click", () => {
@@ -374,6 +381,9 @@ function createWindow(): void {
   });
 
   mainWindow.on("close", (e: Electron.Event) => {
+    console.log(willQuit);
+    if (willQuit) return; //防止阻止托盘退出
+
     mainWindow!.hide();
     e.preventDefault();
     new Notification({

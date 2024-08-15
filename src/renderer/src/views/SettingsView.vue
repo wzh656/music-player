@@ -150,7 +150,7 @@ function addSongList() {
     </div>
   </div>
   <div class="songLists">
-    <label>歌单设置</label>
+    <label>本地歌单</label>
     <div v-for="(songList, listIndex) in songLists" :key="listIndex">
       <p>
         <span
