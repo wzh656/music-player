@@ -30,12 +30,13 @@ declare global {
   }
 
   /* B站搜索结果 */
-  type SearchDataBilibili = {
+  interface SearchDataItemBilibili {
     cid: number;
     part: string;
     page: number;
     duration: number;
-  }[];
+  }
+  type SearchDataBilibili = SearchDataItemBilibili[];
 
   /* 浏览路径结果 */
   interface BrowsePathData {
@@ -73,6 +74,11 @@ declare global {
       ) => Promise<SearchData>;
       // onSearchData: (callback: (data: SearchData) => void) => void;
       searchBilibili: (avid: number) => Promise<SearchDataBilibili | null>;
+      downloadBilibili: (
+        bvid: string,
+        cid: number,
+        name: string,
+      ) => Promsie<void>; //下载
 
       browseFiles: () => Promise<BrowsePathData>;
       browseDir: (path?: string) => Promise<BrowsePathData>;

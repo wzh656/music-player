@@ -1,8 +1,8 @@
 import { ipcMain, BrowserWindow } from "electron";
 import path from "node:path";
-import { searchWindow } from "../settings/windows";
-import { searchAPI } from "../settings/api";
-import searchInject from "../inject/searchInject";
+import { searchWindow } from "../settings/windows.mjs";
+import { searchAPI } from "../settings/api.mjs";
+import searchInject from "../inject/searchInject.mjs";
 
 function search(keyword: string, platform: string, page: number) {
   return new Promise((resolve) => {

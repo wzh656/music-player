@@ -1,11 +1,11 @@
 import { ipcMain } from "electron";
 import fs from "node:fs";
-import { MUSIC_SUFFIXS } from "../settings/musicSuffixs"; //音乐文件后缀
-import { songListsPath } from "../settings/filePath"; //歌单列表文件路径
-import tryPraseSongLists from "../tools/tryPraseSongLists"; //尝试解析歌单列表
-import readRecursively from "../tools/readRecursively"; //循环读取文件
-import filterEndsWith from "../tools/filterEndsWith"; //过滤后缀
-import updateTaskSonglists from "../updateTaskSonglists"; //更新任务栏歌单
+import { MUSIC_SUFFIXS } from "../settings/musicSuffixs.mjs"; //音乐文件后缀
+import { songListsPath } from "../settings/filePath.mjs"; //歌单列表文件路径
+import tryPraseSongLists from "../tools/tryPraseSongLists.mjs"; //尝试解析歌单列表
+import readRecursively from "../tools/readRecursively.mjs"; //循环读取文件
+import filterEndsWith from "../tools/filterEndsWith.mjs"; //过滤后缀
+import updateTaskSonglists from "../updateTaskSonglists.mjs"; //更新任务栏歌单
 
 export default function () {
   //获取歌单列表

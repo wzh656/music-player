@@ -1,5 +1,5 @@
 import { ipcMain, dialog } from "electron";
-import { MUSIC_SUFFIXS } from "../settings/musicSuffixs";
+import { MUSIC_SUFFIXS } from "../settings/musicSuffixs.mjs";
 
 export default function () {
   //浏览文件

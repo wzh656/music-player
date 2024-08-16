@@ -1,6 +1,6 @@
 import { ipcMain } from "electron";
 import fs from "node:fs";
-import updateThumbnailToolbar from "../updateThumbnailToolbar"; //更新缩略图工具栏
+import updateThumbnailToolbar from "../updateThumbnailToolbar.mjs"; //更新缩略图工具栏
 import * as parser from "music-metadata"; //解析音乐信息
 
 export default function () {

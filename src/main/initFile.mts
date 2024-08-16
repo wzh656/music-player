@@ -1,6 +1,10 @@
 /* 初始化文件 */
 import fs from "node:fs";
-import { userdataPath, songListsPath, cookiesPath } from "./settings/filePath"; //文件路径
+import {
+  userdataPath,
+  songListsPath,
+  cookiesPath,
+} from "./settings/filePath.mjs"; //文件路径
 
 export default function () {
   //用户数据文件夹

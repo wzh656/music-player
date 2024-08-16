@@ -64,11 +64,12 @@ async function search(keyword: string, page: number = 1) {
 }); */
 
 /* bilibili搜索 */
+let bvid: string | null = null;
 const searchDataBilibili = reactive<SearchDataBilibili>([]);
 async function searchBilibili(value: string) {
   searching.value = true;
 
-  const bvid = await getBvid(value);
+  bvid = await getBvid(value);
   console.log(bvid);
   if (!bvid || bvid.length != 12 || !bvid.startsWith("BV1")) {
     searching.value = false;
@@ -83,6 +84,12 @@ async function searchBilibili(value: string) {
 
   searchDataBilibili.splice(0, searchDataBilibili.length);
   searchDataBilibili.push(...data);
+}
+
+function downloadAudioBilibili(item: SearchDataItemBilibili) {
+  if (!bvid || !bvid.startsWith("BV1")) return;
+  const cid = item.cid;
+  window.electron.downloadBilibili(bvid, cid, `${item.page}. ${item.part}`);
 }
 
 /* 高亮 */
@@ -313,8 +320,8 @@ function formatTime(sec: number) {
       >
         {{ formatTime(item.duration) }}
       </span>
-      <button @click="">下载音乐</button>
-      <button @click="">下载歌词</button>
+      <button @click="downloadAudioBilibili(item)">下载音乐</button>
+      <button @click="">下载视频</button>
     </template>
   </div>
   <Transition name="fade">

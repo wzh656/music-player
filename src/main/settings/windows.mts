@@ -1,4 +1,4 @@
-import { ref } from "../framework";
+import { ref } from "../framework/index.mjs";
 import { BrowserWindow } from "electron";
 
 export const mainWindow = ref<BrowserWindow | null>(null); //主窗口

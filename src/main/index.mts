@@ -9,15 +9,15 @@ import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import path from "node:path";
 import process from "process"; //判断平台
 
-import { icon, iconImage } from "./loadImages"; //加载图标
+import { icon, iconImage } from "./loadImages.mjs"; //加载图标
 
-import { mainWindow } from "./settings/windows"; //主窗口
-import { willQuit } from "./settings/willQuit"; //是否即将关闭
+import { mainWindow } from "./settings/windows.mjs"; //主窗口
+import { willQuit } from "./settings/willQuit.mjs"; //是否即将关闭
 
-import initFile from "./initFile"; //初始化文件
-import initTray from "./initTray"; //初始化托盘
-import updateThumbnailToolbar from "./updateThumbnailToolbar"; //更新缩略图工具栏
-import interact from "./interact"; //交互
+import initFile from "./initFile.mjs"; //初始化文件
+import initTray from "./initTray.mjs"; //初始化托盘
+import updateThumbnailToolbar from "./updateThumbnailToolbar.mjs"; //更新缩略图工具栏
+import interact from "./interact/index.mjs"; //交互
 
 /* 创建主窗口 */
 function createWindow(): void {

@@ -6,5 +6,4 @@ export const listAPI =
   "https://api.bilibili.com/x/web-interface/wbi/view/detail?aid=";
 
 //B站获取视频API
-export const videoAPI =
-  "https://api.bilibili.com/x/player/wbi/playurl?bvid=&cid=";
+export const videoAPI = "https://api.bilibili.com/x/player/wbi/playurl?";

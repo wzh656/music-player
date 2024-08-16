@@ -24,8 +24,8 @@
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "electron-updater": "^6.1.7",
-    "music-metadata": "^10.1.0",
-    "request": "^2.88.2"
+    "got": "^14.4.2",
+    "music-metadata": "^10.1.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",

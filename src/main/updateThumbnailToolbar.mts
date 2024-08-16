@@ -1,6 +1,6 @@
 /* 初始化缩略图工具栏 */
-import { mainWindow } from "./settings/windows";
-import { lastImage, pauseImage, playImage, nextImage } from "./loadImages";
+import { mainWindow } from "./settings/windows.mjs";
+import { lastImage, pauseImage, playImage, nextImage } from "./loadImages.mjs";
 
 export default function (playState: boolean) {
   mainWindow.value!.setThumbarButtons([

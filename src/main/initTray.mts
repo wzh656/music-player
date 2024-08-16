@@ -1,13 +1,13 @@
 /* 创建托盘 */
 import { app, Menu, Tray } from "electron";
-import { iconImage } from "./loadImages"; //加载图标
-import { mainWindow } from "./settings/windows"; //主窗口
-import { willQuit } from "./settings/willQuit"; //是否即将关闭应用
+import { iconImage } from "./loadImages.mjs"; //加载图标
+import { mainWindow } from "./settings/windows.mjs"; //主窗口
+import { willQuit } from "./settings/willQuit.mjs"; //是否即将关闭应用
 
 export default function () {
   const tray = new Tray(iconImage);
   const contextMenu = Menu.buildFromTemplate([
-    { label: "打开应用", click: () => mainWindow!.show() },
+    { label: "打开应用", click: () => mainWindow.value!.show() },
     {
       label: "退出应用",
       click: () => {
@@ -18,7 +18,7 @@ export default function () {
   ]);
 
   tray.on("click", () => {
-    mainWindow!.show();
+    mainWindow.value!.show();
   });
 
   tray.setToolTip("冈易音乐播放器"); //悬浮提示

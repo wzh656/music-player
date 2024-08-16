@@ -1,8 +1,8 @@
 import { ipcMain, Notification, dialog } from "electron";
 import fs from "node:fs";
 import path from "node:path";
-import request from "request";
-import { iconImage } from "../loadImages";
+import { iconImage } from "../loadImages.mjs"; //加载图标
+import download from "../tools/download.mjs"; //下载操作
 
 export default function () {
   //下载文件
@@ -13,30 +13,24 @@ export default function () {
       properties: ["openDirectory", "createDirectory"],
     });
     if (canceled) return; //取消下载
-    const selectPath = filePaths[0];
-    const downloadPath = path.resolve(selectPath, name);
+    const dirPath = filePaths[0];
+    const downloadPath = path.resolve(dirPath, name);
 
-    const process = fs.createWriteStream(downloadPath);
-    request({
-      url,
-      timeout: 10000,
-    }).pipe(process);
-    process.on("finish", () => {
-      console.log("[downloadFile] finish", downloadPath);
-      new Notification({
-        title: "下载完成",
-        body: `${name}已下载至${downloadPath}`,
-        icon: iconImage,
-      }).show();
-    });
-    process.on("error", (err) => {
-      console.log("[downloadFile] error", downloadPath, err);
-      new Notification({
-        title: "下载失败",
-        body: `${name}无法下载\n错误类型:${err.name}\n错误信息:${err.message}`,
-        icon: iconImage,
-      }).show();
-    });
+    download(url, downloadPath)
+      .then(() => {
+        new Notification({
+          title: "下载完成",
+          body: `${name}已下载至${downloadPath}`,
+          icon: iconImage,
+        }).show();
+      })
+      .catch((err) => {
+        new Notification({
+          title: "下载失败",
+          body: `${name}无法下载\n错误类型:${err.name}\n错误信息:${err.message}`,
+          icon: iconImage,
+        }).show();
+      });
   });
 
   //下载文本文件
@@ -47,8 +41,8 @@ export default function () {
       properties: ["openDirectory", "createDirectory"],
     });
     if (canceled) return; //取消下载
-    const path = filePaths[0];
-    const downloadPath = path + "/" + name;
+    const dirPath = filePaths[0];
+    const downloadPath = path.resolve(dirPath, name);
 
     fs.writeFileSync(downloadPath, text); //写入文件
 

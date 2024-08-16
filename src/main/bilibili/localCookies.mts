@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { cookiesPath } from "../settings/filePath";
+import { cookiesPath } from "../settings/filePath.mjs";
 
 export function getLocalCookies() {
   return fs.readFileSync(cookiesPath).toString();

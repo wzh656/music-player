@@ -1,6 +1,6 @@
 import { BrowserWindow, session } from "electron";
-import bilibiliInject from "../inject/bilibiliInject"; //注入代码 string
-import { bilibiliWindow } from "../settings/windows";
+import bilibiliInject from "../inject/bilibiliInject.mjs"; //注入代码 string
+import { bilibiliWindow } from "../settings/windows.mjs";
 
 const url = "https://www.bilibili.com/";
 

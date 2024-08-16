@@ -1,4 +1,4 @@
-//视频信息接口返回值
+//视频合集接口返回值
 export interface listAPIData {
   code: number;
   message: string;
@@ -52,5 +52,45 @@ export interface listAPIData {
         },
       ];
     };
+  };
+}
+
+//单个视频信息接口返回值
+export interface videoAPIData {
+  // 导出一个接口 videoAPIData
+  code: number; // 请求返回的状态码
+  message: string; // 请求返回的消息
+  ttl: number; // 数据的缓存时间
+  data: {
+    // 数据对象
+    from: string; // 视频来源
+    result: string; // 请求结果
+    message: string; // 请求消息
+    quality: number; // 视频质量
+    format: string; // 视频格式
+    timelength: number; // 视频时长
+    accept_format: string; // 可接受的格式
+    accept_description: string[]; // 可接受的格式描述
+    video_codecid: number; // 视频编码ID
+    seek_param: string; // 搜索参数
+    seek_type: string; // 搜索类型
+    durl: [
+      // 视频下载链接数组
+      {
+        order: number; // 下载链接顺序
+        length: number; // 视频长度
+        size: number; // 视频大小
+        url: string; // 视频下载链接
+        backup_url: string[]; // 备用下载链接
+      },
+    ];
+    support_formats: {
+      // 支持的格式数组
+      quality: number; // 格式质量
+      format: string; // 格式
+      new_description: string; // 新的描述
+      display_desc: string; // 显示的描述
+      superscript: string; // 上标
+    }[];
   };
 }
