@@ -6,6 +6,8 @@ declare global {
   interface SongList {
     name: string; //歌单名称
     paths: string[]; //音乐文件路径
+    suffixes?: string[]; //音乐文件后缀
+    artists?: string[]; //歌手
     num?: number; //歌曲数量
     type?: string[]; //音乐类型
     editing?: boolean; //是否编辑中
@@ -38,6 +40,13 @@ declare global {
   }
   type SearchDataBilibili = SearchDataItemBilibili[];
 
+  /* B站搜索简略结果 */
+  interface SearchDataItemBilibiliSimple {
+    name: string;
+    cid: number;
+  }
+  type SearchDataBilibiliSimple = SearchDataItemBilibiliSimple[];
+
   /* 浏览路径结果 */
   interface BrowsePathData {
     canceled: boolean;
@@ -53,6 +62,7 @@ declare global {
       getSongLists: () => Promise<SongLists>;
       updateSongLists: (songListsStr: string) => void;
       getSongListSongs: (index: number) => Promise<string[]>;
+      getSongListArtists: (index: number) => Promise<string[]>;
       getLyrics: (path: string) => Promise<string>;
       getArtist: (path: string) => Promise<string>;
 
@@ -73,12 +83,35 @@ declare global {
         page: number,
       ) => Promise<SearchData>;
       // onSearchData: (callback: (data: SearchData) => void) => void;
+
       searchBilibili: (avid: number) => Promise<SearchDataBilibili | null>;
-      downloadBilibili: (
+      downloadAudioBilibili: (
         bvid: string,
         cid: number,
         name: string,
-      ) => Promsie<void>; //下载
+      ) => Promsie<boolean>; //下载音频
+      downloadVideoBilibili: (
+        bvid: string,
+        cid: number,
+        name: string,
+      ) => Promsie<boolean>; //下载视频
+      downloadAllAudioBilibili: (
+        bvid: string,
+        items: SearchDataBilibiliSimple,
+      ) => void; //下载所有音频
+      downloadAllVideoBilibili: (
+        bvid: string,
+        items: SearchDataBilibiliSimple,
+      ) => void; //下载所有视频
+      downloadAllAudioBilibiliProgress: (
+        callback: (progress: number) => void,
+      ) => void; //下载所有音频进度
+      downloadAllVideoBilibiliProgress: (
+        callback: (progress: number) => void,
+      ) => void; //下载所有视频进度
+
+      onTransAudio: (callback: (filePath: string) => void) => void; //转换音频
+      onTransAudioDone: () => void; //转换音频完成
 
       browseFiles: () => Promise<BrowsePathData>;
       browseDir: (path?: string) => Promise<BrowsePathData>;
@@ -86,4 +119,4 @@ declare global {
   }
 }
 
-export { SongLists };
+// export { SongLists };

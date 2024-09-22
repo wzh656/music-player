@@ -22,8 +22,11 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: {
-          index: resolve(__dirname, "src/preload/index.ts"),
-          search: resolve(__dirname, "src/preload/search.ts"),
+          index: resolve(__dirname, "src/preload/index.mts"),
+          search: resolve(__dirname, "src/preload/search.mts"),
+        },
+        output: {
+          format: "es",
         },
       },
     },
@@ -37,5 +40,12 @@ export default defineConfig({
       },
     },
     plugins: [vue()],
+    /* build: {
+      rollupOptions: {
+        output: {
+          format: "es",
+        },
+      },
+    }, */
   },
 });

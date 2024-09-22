@@ -7,6 +7,7 @@ import { PlayMode } from "@/types/PlayMode";
 import { ColorScheme } from "@/types/ColorScheme";
 import { ThemeColor } from "@/types/ThemeColor";
 import { getLightenColor } from "@/ts/colorCalc";
+// import transAudio from "./ts/transAudio";
 
 /* 注入依赖 */
 const songLists = reactive<SongLists>([]); //所有歌单列表
@@ -114,6 +115,14 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener(
   updateScheme,
 );
 updateScheme();
+
+/* 音频转换 */
+/* window.electron.onTransAudio(async (filePath: string) => {
+  console.log("[onTransAudio]", filePath);
+  const file = await transAudio(filePath);
+  // console.log(file);
+  window.electron.onTransAudioDone();
+}); */
 </script>
 
 <template>

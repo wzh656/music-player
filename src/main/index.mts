@@ -10,6 +10,7 @@ import path from "node:path";
 import process from "process"; //判断平台
 
 import { icon, iconImage } from "./loadImages.mjs"; //加载图标
+import { vueExtensionsPath } from "./settings/filePath.mjs"; //路径
 
 import { mainWindow } from "./settings/windows.mjs"; //主窗口
 import { willQuit } from "./settings/willQuit.mjs"; //是否即将关闭
@@ -32,8 +33,8 @@ function createWindow(): void {
     webPreferences: {
       devTools: is.dev, //禁用开发者工具
       webSecurity: false, //关闭安全策略 允许本地加载
-      preload: path.join(__dirname, "../preload/index.js"), //必须绝对路径
-      sandbox: false,
+      preload: path.resolve(__dirname, "../preload/index.mjs"), //必须绝对路径
+      sandbox: false, //关闭沙盒模式才能使用preload
     },
   });
   Menu.setApplicationMenu(null); //清空菜单
@@ -80,8 +81,8 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId("com.cxstudio.musicplayer");
 
-  const vueDevToolsPath = path.resolve("./extensions/vue-devtools"); //必须绝对路径
-  if (is.dev) await session.defaultSession.loadExtension(vueDevToolsPath);
+  //加载插件
+  if (is.dev) await session.defaultSession.loadExtension(vueExtensionsPath);
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

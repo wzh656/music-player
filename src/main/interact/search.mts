@@ -8,19 +8,24 @@ function search(keyword: string, platform: string, page: number) {
   return new Promise((resolve) => {
     console.log("[search]", keyword, page);
 
-    //创建窗口
+    //保证摧毁上次的窗口
+    if (searchWindow.value) searchWindow.value.destroy();
+
+    //创建搜索窗口
+    console.log(path.join(__dirname, "../preload/search.mjs"));
     searchWindow.value = new BrowserWindow({
       width: 600,
       height: 400,
       autoHideMenuBar: true,
-      show: false,
+      // show: false,
       webPreferences: {
-        devTools: false, //禁用开发者工具
-        preload: path.join(__dirname, "../preload/search.js"), //必须绝对路径
+        // devTools: false, //禁用开发者工具
+        preload: path.join(__dirname, "../preload/search.mjs"), //必须绝对路径
+        sandbox: false, //关闭沙盒模式才能使用preload
       },
     });
     searchWindow.value.loadURL(searchAPI);
-    // searchWindow.value.webContents.openDevTools({ mode: "detach" }); // 打开开发工具
+    searchWindow.value.webContents.openDevTools({ mode: "detach" }); // 打开开发工具
 
     //注入代码
     console.log(searchInject);

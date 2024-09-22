@@ -3,7 +3,7 @@ import fs from "node:fs";
 import {
   userdataPath,
   songListsPath,
-  cookiesPath,
+  cookiePath,
 } from "./settings/filePath.mjs"; //文件路径
 
 export default function () {
@@ -15,5 +15,5 @@ export default function () {
     fs.writeFileSync(songListsPath, JSON.stringify([]));
 
   //cookie文件
-  if (!fs.existsSync(cookiesPath)) fs.writeFileSync(cookiesPath, "");
+  if (!fs.existsSync(cookiePath)) fs.writeFileSync(cookiePath, "");
 }

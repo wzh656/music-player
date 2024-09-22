@@ -36,6 +36,8 @@ export default function () {
   //下载文本文件
   ipcMain.on("downloadText", async (_, text: string, name: string) => {
     console.log("[downloadText]", name);
+
+    //选择路径
     const { canceled, filePaths } = await dialog.showOpenDialog({
       title: "请选择下载路径",
       properties: ["openDirectory", "createDirectory"],

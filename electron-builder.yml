@@ -13,6 +13,7 @@ files:
   - "!userdata/**/*"
 asarUnpack:
   - resources/**
+  - bin/**
 win:
   executableName: 冈易音乐播放器
 nsis:

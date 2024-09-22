@@ -61,6 +61,15 @@ async function addDirPath(listIndex: number) {
   songLists![listIndex].paths.push(filePaths[0]);
 }
 
+/* 更改歌手 */
+function changeArtists(event: Event, listIndex: number) {
+  const target = event.target as HTMLInputElement;
+  songLists[listIndex].artists = target.value
+    .trim()
+    .split(";")
+    .map((s) => s.trim());
+}
+
 /* 删除歌单 */
 function removeSongList(listIndex: number) {
   const listName = songLists![listIndex].name;
@@ -199,6 +208,16 @@ function addSongList() {
           <button class="outlineButton" @click="addDirPath(listIndex)">
             添加文件夹
           </button>
+        </li>
+        <li>
+          <span>过滤歌手：</span>
+          <input
+            type="text"
+            spellcheck="false"
+            :value="songList.artists?.join('; ')"
+            @keydown.stop
+            @change="changeArtists($event, listIndex)"
+          />
         </li>
       </ul>
       <button

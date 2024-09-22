@@ -31,6 +31,7 @@ function onEnter(event: KeyboardEvent) {
   input.blur(); //失去焦点
 }
 
+/* Enter 搜索 Bilibili */
 function onEnterBilibili(event: KeyboardEvent) {
   const input = event.currentTarget as HTMLInputElement;
   const value = input.value.trim();
@@ -63,7 +64,7 @@ async function search(keyword: string, page: number = 1) {
   searching.value = false;
 }); */
 
-/* bilibili搜索 */
+/* Bilibili 搜索 */
 let bvid: string | null = null;
 const searchDataBilibili = reactive<SearchDataBilibili>([]);
 async function searchBilibili(value: string) {
@@ -84,12 +85,6 @@ async function searchBilibili(value: string) {
 
   searchDataBilibili.splice(0, searchDataBilibili.length);
   searchDataBilibili.push(...data);
-}
-
-function downloadAudioBilibili(item: SearchDataItemBilibili) {
-  if (!bvid || !bvid.startsWith("BV1")) return;
-  const cid = item.cid;
-  window.electron.downloadBilibili(bvid, cid, `${item.page}. ${item.part}`);
 }
 
 /* 高亮 */
@@ -189,6 +184,64 @@ function downloadLyrics(item: SearchDataItem) {
   window.electron.downloadText(item.lrc, item.title + ".lrc");
 }
 
+/* Bilibili下载音频 */
+async function downloadAudioBilibili(item: SearchDataItemBilibili) {
+  if (!bvid || !bvid.startsWith("BV1")) return;
+  const cid = item.cid;
+
+  const close = waitingProp("正在下载音频，请稍候……");
+  await window.electron.downloadAudioBilibili(bvid, cid, `${item.part}`);
+  close();
+}
+
+/* Bilibili下载视频 */
+async function downloadVideoBilibili(item: SearchDataItemBilibili) {
+  if (!bvid || !bvid.startsWith("BV1")) return;
+  const cid = item.cid;
+
+  const close = waitingProp("正在下载视频，请稍候……");
+  await window.electron.downloadVideoBilibili(bvid, cid, `${item.part}`);
+  close();
+}
+
+/* Bilibili下载全部音频 */
+async function downloadAllAudioBilibili() {
+  if (!bvid || !bvid.startsWith("BV1")) return;
+
+  const sum = searchDataBilibili.length;
+  const close = waitingProp(`正在下载音频：0/${sum}`);
+
+  const items = searchDataBilibili.map((item) => ({
+    name: item.part,
+    cid: item.cid,
+  }));
+  window.electron.downloadAllAudioBilibili(bvid, items);
+  window.electron.downloadAllAudioBilibiliProgress((progress) => {
+    waitingPropText.value = `正在下载音频：${progress}/${sum}`;
+    if (progress < 0) close(); //取消下载
+    if (progress >= sum) close(); //下载完成
+  });
+}
+
+/* Bilibili下载全部视频 */
+async function downloadAllVideoBilibili() {
+  if (!bvid || !bvid.startsWith("BV1")) return;
+
+  const sum = searchDataBilibili.length;
+  const close = waitingProp(`正在下载视频：0/${sum}`);
+
+  const items = searchDataBilibili.map((item) => ({
+    name: item.part,
+    cid: item.cid,
+  }));
+  window.electron.downloadAllVideoBilibili(bvid, items);
+  window.electron.downloadAllVideoBilibiliProgress((progress) => {
+    waitingPropText.value = `正在下载视频：${progress}/${sum}`;
+    if (progress < 0) close(); //取消下载
+    if (progress >= sum) close(); //下载完成
+  });
+}
+
 /* vip弹窗 */
 const vipDialogShow = ref(false);
 let vipDialogId: number | null = null;
@@ -198,6 +251,17 @@ function vipDialog() {
 
   if (vipDialogId) clearTimeout(vipDialogId);
   vipDialogId = window.setTimeout(() => (vipDialogShow.value = false), 2000);
+}
+
+/* 等待弹窗 */
+const waitingPropShow = ref(false);
+const waitingPropText = ref("请稍候……");
+function waitingProp(text: string) {
+  waitingPropShow.value = true;
+  waitingPropText.value = text;
+  return () => {
+    waitingPropShow.value = false;
+  };
 }
 
 /* 格式化时间 */
@@ -212,10 +276,25 @@ function formatTime(sec: number) {
     return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
   }
 }
+
+/* 格式化总时间 */
+function formatTotalTime(data: SearchDataBilibili) {
+  let totalTime = 0;
+  for (const item of data) {
+    totalTime += item.duration;
+  }
+  return formatTime(totalTime);
+}
 </script>
 
 <template>
   <h1>音乐搜索</h1>
+  <p v-if="currentPlatform != MusicPlatform.BL">
+    <small>（部分会员歌曲因版权原因无法下载播放）</small>
+  </p>
+  <p v-if="currentPlatform == MusicPlatform.BL">
+    <small>（由于B站风控严格，初次操作可能需要登录，且须下载后方能播放）</small>
+  </p>
   <div class="platform">
     <div
       class="radio"
@@ -297,7 +376,17 @@ function formatTime(sec: number) {
       <button @click="downloadLyrics(item)">下载歌词</button>
     </template>
   </div>
-  <div v-if="currentPlatform == MusicPlatform.BL" class="result">
+  <div v-if="currentPlatform == MusicPlatform.BL" class="result bilibili">
+    <span> 共 {{ searchDataBilibili.length }} 个</span>
+    <span class="total">
+      总时长 {{ formatTotalTime(searchDataBilibili) }}
+    </span>
+    <button class="round" @click="downloadAllAudioBilibili()">
+      下载全部音乐
+    </button>
+    <button class="round" @click="downloadAllVideoBilibili()">
+      下载全部视频
+    </button>
     <template v-for="item in searchDataBilibili" :key="item.page">
       <span
         data-type="index"
@@ -321,12 +410,17 @@ function formatTime(sec: number) {
         {{ formatTime(item.duration) }}
       </span>
       <button @click="downloadAudioBilibili(item)">下载音乐</button>
-      <button @click="">下载视频</button>
+      <button @click="downloadVideoBilibili(item)">下载视频</button>
     </template>
   </div>
   <Transition name="fade">
     <div v-if="vipDialogShow" class="prop" @click="vipDialogShow = false">
       会员歌曲，无法操作
+    </div>
+  </Transition>
+  <Transition name="fade">
+    <div v-if="waitingPropShow" class="prop">
+      {{ waitingPropText }}
     </div>
   </Transition>
 </template>
@@ -335,6 +429,10 @@ function formatTime(sec: number) {
 @import "@/assets/template.scss";
 
 h1 {
+  text-align: center;
+}
+
+p {
   text-align: center;
 }
 
@@ -392,6 +490,20 @@ input {
   overflow-x: hidden;
   overflow-y: overlay;
   @include customScrollbar;
+
+  //B站搜索结果
+  &.bilibili {
+    grid-template-columns: 5rem auto 1fr 4rem 4rem;
+    .total {
+      grid-column-start: span 2; //跨两列
+    }
+
+    .round {
+      width: 100%;
+      margin: 0;
+      border-radius: 5px;
+    }
+  }
 
   span {
     padding: 0.5rem;

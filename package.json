@@ -2,7 +2,8 @@
   "name": "gy-music-player",
   "version": "1.2.0",
   "description": "A simple local music player",
-  "main": "./out/main/index.mjs",
+  "main": "./out/main/index.js",
+  "type": "module",
   "author": "wzh656",
   "homepage": "https://electron-vite.org",
   "scripts": {
@@ -23,8 +24,9 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
+    "axios": "^1.7.7",
     "electron-updater": "^6.1.7",
-    "got": "^14.4.2",
+    "md5": "^2.3.0",
     "music-metadata": "^10.1.0"
   },
   "devDependencies": {
@@ -32,6 +34,7 @@
     "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@rushstack/eslint-patch": "^1.10.3",
+    "@types/md5": "^2.3.5",
     "@types/node": "^20.14.8",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/eslint-config-prettier": "^9.0.0",

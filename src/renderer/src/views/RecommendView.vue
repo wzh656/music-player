@@ -190,7 +190,8 @@ p {
 .songCard {
   @include flex(row);
   align-items: center;
-  width: max-content;
+  //width: max-content;
+  max-width: 90%;
   margin: 1rem auto;
   padding: 0.5rem;
   /* margin-bottom: 3rem; */
