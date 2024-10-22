@@ -10,7 +10,7 @@ export function showErrorBox(error: unknown, content = "", title = "错误") {
     message:
       error instanceof Error
         ? `${content}\n错误类型: ${error.name}\n错误信息: ${error.message}`
-        : `${content}\n错误类型: 未知\n错误信息: ${error}`,
+        : `${content}\n错误类型: 未知\n错误信息: ${JSON.stringify(error)}`,
   });
 }
 
@@ -25,7 +25,7 @@ export function showErrorNotification(
     body:
       error instanceof Error
         ? `${content}\n错误类型: ${error.name}\n错误信息: ${error.message}`
-        : `${content}\n错误类型: 未知\n错误信息: ${error}`,
+        : `${content}\n错误类型: 未知\n错误信息: ${JSON.stringify(error)}`,
     icon: iconImage,
   });
   notification.show();

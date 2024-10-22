@@ -15,6 +15,7 @@ import {
 import { binPath } from "../settings/filePath.mjs"; //ffmpeg路径
 import { listAPI, videoAPI } from "../settings/api.mjs"; //API接口
 import download from "../tools/download.mjs"; //下载操作
+import fileNameNormalize from "../tools/fileNameNormalize.mjs"; //文件名规范化
 import { getLocalCookie, setLocalCookie } from "../bilibili/localCookie.mjs"; //Cookie操作
 import loginBilibili from "../bilibili/login.mjs"; //登录bilbili并获取Cookie
 import wbi from "../bilibili/wbi.mjs"; //wbi验证算法
@@ -103,7 +104,7 @@ function transAudio(filePath: string, audioPath: string) {
     const ffmpegPath = path.join(binPath, "ffmpeg.exe"); //ffmpeg路径
     execFile(
       ffmpegPath,
-      ["-y", "-i", filePath, "-vn", "-c:a", "copy", audioPath],
+      ["-y", "-hide_banner", "-i", filePath, "-vn", "-c:a", "copy", audioPath],
       (error, stdout, stderr) => {
         if (error) {
           reject({ error, stdout, stderr });
@@ -155,6 +156,7 @@ export default function () {
       }
 
       //下载
+      name = fileNameNormalize(name); //规范化文件名
       const downloadPath = path.resolve(selectPath, name + ".mp4"); //视频路径
       console.log("[downloadVideoBilibili] downloadPath:", downloadPath);
       try {
@@ -192,6 +194,7 @@ export default function () {
       }
 
       //下载
+      name = fileNameNormalize(name); //规范化文件名
       const downloadPath = path.resolve(selectPath, name + ".mp4"); //视频路径
       const audioPath = path.resolve(selectPath, name + ".m4a"); //音频路径
       try {
@@ -217,7 +220,8 @@ export default function () {
         return event.sender.send("downloadAllVideoBilibiliProgress", -1);
 
       for (const [index, item] of Object.entries(items)) {
-        const { cid, name } = item;
+        const { cid, name: rawName } = item;
+        const name = fileNameNormalize(rawName); //规范化文件名
 
         //获取视频链接
         const videoData = await getVideo(bvid, cid);
@@ -257,7 +261,8 @@ export default function () {
         return event.sender.send("downloadAllAudioBilibiliProgress", -1);
 
       for (const [index, item] of Object.entries(items)) {
-        const { cid, name } = item;
+        const { cid, name: rawName } = item;
+        const name = fileNameNormalize(rawName); //规范化文件名
 
         //获取音频链接
         const videoData = await getVideo(bvid, cid);

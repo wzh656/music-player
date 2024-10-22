@@ -3,11 +3,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { iconImage } from "../loadImages.mjs"; //加载图标
 import download from "../tools/download.mjs"; //下载操作
+import fileNameNormalize from "../tools/fileNameNormalize.mjs"; //文件名规范化
 
 export default function () {
   //下载文件
   ipcMain.on("downloadFile", async (_, url: string, name: string) => {
+    name = fileNameNormalize(name); //文件名规范化
     console.log("[downloadFile]", url, name);
+
+    //选择路径
     const { canceled, filePaths } = await dialog.showOpenDialog({
       title: "请选择下载路径",
       properties: ["openDirectory", "createDirectory"],

@@ -17,15 +17,15 @@ function search(keyword: string, platform: string, page: number) {
       width: 600,
       height: 400,
       autoHideMenuBar: true,
-      // show: false,
+      show: false,
       webPreferences: {
-        // devTools: false, //禁用开发者工具
+        devTools: false, //禁用开发者工具
         preload: path.join(__dirname, "../preload/search.mjs"), //必须绝对路径
         sandbox: false, //关闭沙盒模式才能使用preload
       },
     });
     searchWindow.value.loadURL(searchAPI);
-    searchWindow.value.webContents.openDevTools({ mode: "detach" }); // 打开开发工具
+    // searchWindow.value.webContents.openDevTools({ mode: "detach" }); // 打开开发工具
 
     //注入代码
     console.log(searchInject);
