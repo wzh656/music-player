@@ -3,9 +3,9 @@ import { app } from "electron";
 
 export default function (names: string[]) {
   app.setUserTasks(
-    names.map((name) => ({
+    names.map((name, index) => ({
       program: process.execPath,
-      arguments: `--play-song-list "${name}"`,
+      arguments: `--play-song-list ${index}`,
       iconPath: process.execPath,
       iconIndex: 0,
       title: name,

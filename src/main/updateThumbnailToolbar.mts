@@ -1,8 +1,13 @@
 /* 初始化缩略图工具栏 */
-import { mainWindow } from "./settings/windows.mjs";
-import { lastImage, pauseImage, playImage, nextImage } from "./loadImages.mjs";
+import { lastImage, pauseImage, playImage, nextImage } from "./loadImages.mjs"; // 图片资源
+import { mainWindow } from "./settings/windows.mjs"; // 主窗口
+import { playState } from "./settings/playState.mjs"; // 播放状态
 
-export default function (playState: boolean) {
+// let currentPlayState = false;
+
+export default function () {
+  // currentPlayState = playState ?? currentPlayState;
+
   mainWindow.value!.setThumbarButtons([
     {
       tooltip: "上一首",
@@ -11,7 +16,7 @@ export default function (playState: boolean) {
         mainWindow.value!.webContents.send("last");
       },
     },
-    playState
+    playState.value
       ? {
           tooltip: "暂停",
           icon: pauseImage,

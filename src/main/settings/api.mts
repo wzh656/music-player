@@ -1,5 +1,14 @@
+import { MusicPlatform } from "./MusicPlatform.mjs";
+
+/* interface SearchAPIList {
+  [key in MusicPlatform]: string;
+} */
+
 //音乐搜索API
-export const searchAPI = "https://www.yyssq.cn/";
+export const searchAPI = {
+  [MusicPlatform.WY]: "https://www.yyssq.cn/",
+  [MusicPlatform.QQ]: "https://music.90svip.cn/",
+};
 
 //B站视频信息API
 export const listAPI =

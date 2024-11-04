@@ -1,12 +1,14 @@
 import { ipcMain, BrowserWindow } from "electron";
 import path from "node:path";
 import { searchWindow } from "../settings/windows.mjs";
+import { MusicPlatform } from "../settings/MusicPlatform.mjs";
 import { searchAPI } from "../settings/api.mjs";
 import searchInject from "../inject/searchInject.mjs";
 
-function search(keyword: string, platform: string, page: number) {
+function search(keyword: string, platform: MusicPlatform, page: number) {
   return new Promise((resolve) => {
-    console.log("[search]", keyword, page);
+    console.log("[search]", keyword, platform, page);
+    const apiUrl: string = searchAPI[platform];
 
     //保证摧毁上次的窗口
     if (searchWindow.value) searchWindow.value.destroy();
@@ -24,14 +26,14 @@ function search(keyword: string, platform: string, page: number) {
         sandbox: false, //关闭沙盒模式才能使用preload
       },
     });
-    searchWindow.value.loadURL(searchAPI);
+    searchWindow.value.loadURL(apiUrl);
     // searchWindow.value.webContents.openDevTools({ mode: "detach" }); // 打开开发工具
 
     //注入代码
-    console.log(searchInject);
+    // console.log(searchInject);
     searchWindow.value.webContents.executeJavaScript(searchInject);
     searchWindow.value.webContents.executeJavaScript(
-      `onSearch('${keyword}', '${platform}', ${+page})`,
+      `onSearch('${apiUrl}', '${keyword}', '${platform}', ${page})`,
     );
 
     //返回数据
@@ -51,7 +53,7 @@ export default function () {
   //搜索
   ipcMain.handle(
     "search",
-    async (_, keyword: string, platform: string, page: number) => {
+    async (_, keyword: string, platform: MusicPlatform, page: number) => {
       return await search(keyword, platform, page);
     },
   );

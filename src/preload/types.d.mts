@@ -16,8 +16,12 @@ declare global {
 
   /* 搜索结果 */
   interface SearchDataItem {
-    title: string; //标题
-    author: string; //作者
+    title?: string; //标题
+    name?: string; //标题
+
+    author?: string; //作者
+    artist?: string; //作者
+
     lrc: string; //歌词
     songid: number; //id
     pic: string; //封面
@@ -60,6 +64,7 @@ declare global {
       onChangeMaximum: (callback: (bool: boolean) => void) => void;
 
       getSongLists: () => Promise<SongLists>;
+      onPlaySongList: (callback: (index: number) => void) => void;
       updateSongLists: (songListsStr: string) => void;
       getSongListSongs: (index: number) => Promise<string[]>;
       getSongListArtists: (index: number) => Promise<string[]>;

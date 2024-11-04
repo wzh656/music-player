@@ -2,23 +2,25 @@ import {
   app,
   BrowserWindow,
   Menu,
-  session, //会话 加载插件
-  Notification, //通知
+  session, // 会话 加载插件
+  Notification, // 通知
 } from "electron";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import path from "node:path";
-import process from "process"; //判断平台
+import process from "process"; // 判断平台
 
-import { icon, iconImage } from "./loadImages.mjs"; //加载图标
-import { vueExtensionsPath } from "./settings/filePath.mjs"; //路径
+import { icon, iconImage } from "./loadImages.mjs"; // 加载图标
+import { vueExtensionsPath } from "./settings/filePath.mjs"; // 路径
 
-import { mainWindow } from "./settings/windows.mjs"; //主窗口
-import { willQuit } from "./settings/willQuit.mjs"; //是否即将关闭
+import { mainWindow } from "./settings/windows.mjs"; // 主窗口
+import { willQuit } from "./settings/willQuit.mjs"; // 是否即将关闭
+import { playState } from "./settings/playState.mjs"; // 播放状态
 
-import initFile from "./initFile.mjs"; //初始化文件
-import initTray from "./initTray.mjs"; //初始化托盘
-import updateThumbnailToolbar from "./updateThumbnailToolbar.mjs"; //更新缩略图工具栏
-import interact from "./interact/index.mjs"; //交互
+import { showErrorBox } from "./tools/message.mjs"; // 错误提示框
+import initFile from "./initFile.mjs"; // 初始化文件
+import initTray from "./initTray.mjs"; // 初始化托盘
+import updateThumbnailToolbar from "./updateThumbnailToolbar.mjs"; // 更新缩略图工具栏
+import interact from "./interact/index.mjs"; // 交互
 
 /* 创建主窗口 */
 function createWindow(): void {
@@ -26,6 +28,7 @@ function createWindow(): void {
     width: 400,
     height: 600,
     minWidth: 350,
+    maxWidth: 500,
     show: false,
     autoHideMenuBar: true,
     frame: false,
@@ -55,22 +58,69 @@ function createWindow(): void {
 
   mainWindow.value.on("ready-to-show", () => {
     mainWindow.value!.show();
-    updateThumbnailToolbar(false); //初始化缩略图工具栏
+    updateThumbnailToolbar(); // 初始化缩略图工具栏
   });
 
   //关闭事件
   mainWindow.value.on("close", (e: Electron.Event) => {
     console.log(willQuit);
-    if (willQuit.value) return; //防止阻止托盘退出
+    if (willQuit.value) return; // 防止阻止托盘退出
 
     mainWindow.value!.hide();
-    e.preventDefault();
+    e.preventDefault(); // 阻止窗口关闭
+    if (playState.value) return; // 正在播放时不提示
     new Notification({
       title: "冈易音乐播放器",
       body: `窗口已隐藏，可在右下角托盘处退出`,
       icon: iconImage,
     }).show();
   });
+}
+
+/* 判断是否多开 */
+interface AdditionalData {
+  args: string[];
+}
+const additionalData: AdditionalData = { args: process.argv.slice(1) };
+const gotTheLock = app.requestSingleInstanceLock(additionalData);
+if (!gotTheLock) {
+  // 第二个实例运行 退出
+  console.log("Another instance is already running, quitting.");
+  app.quit();
+} else {
+  // 第一个实例运行 监听第二个实例传过来的参数
+  app.on(
+    "second-instance",
+    (event, commandLine, workingDirectory, additionalData) => {
+      // additionalData: 从第二个实例中接收到的数据
+      console.log("[second-instance]", additionalData);
+
+      if (!mainWindow.value) return;
+
+      // 是否有意图播放歌单
+      let isIntentToPlaySongList = false;
+      if (additionalData) {
+        const data = additionalData as AdditionalData;
+        for (let i = 0; i < data.args.length; i++)
+          if (data.args[i] == "--play-song-list") {
+            const index = +data.args[i + 1];
+            if (isNaN(index)) {
+              showErrorBox(data.args[i + 1], "歌单ID必须为数字", "错误");
+              return;
+            }
+            mainWindow.value.webContents.send("playSongList", index); //播放歌单
+            isIntentToPlaySongList = true;
+            break;
+          }
+      }
+
+      // 有人试图运行第二个实例，我们应该关注我们的窗口
+      if (isIntentToPlaySongList) return; // 播放歌单无需显示窗口
+      mainWindow.value.show(); //显示窗口
+      if (mainWindow.value.isMinimized()) mainWindow.value.restore(); //恢复窗口
+      mainWindow.value.focus(); //聚焦窗口
+    },
+  );
 }
 
 // This method will be called when Electron has finished

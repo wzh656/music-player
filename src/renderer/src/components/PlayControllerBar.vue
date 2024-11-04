@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, type Ref } from "vue";
+import { computed, inject, watch, type Ref } from "vue";
 import lastIcon from "@/assets/icons/lastIcon.vue";
 import nextIcon from "@/assets/icons/nextIcon.vue";
 import PlayModeIcon from "./playControl/PlayModeIcon.vue"; //播放模式按钮组
@@ -27,6 +27,11 @@ const currentMusicName = computed(() => {
     return "在线歌曲 - " + currentSonglist.value;
   const matchResult = currentMusic.value.match(/([^\\/]+)\..+$/);
   return matchResult ? matchResult[0] : currentMusic.value; //0:含后缀名, 1:文件名
+});
+
+// 更新任务栏标题
+watch(currentMusicName, (newName) => {
+  document.title = newName;
 });
 
 /* 播放音乐 */

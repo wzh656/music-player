@@ -10,8 +10,16 @@ import {
   getAllArtists,
 } from "../tools/filterSongs.mjs"; //过滤后缀
 import updateTaskSonglists from "../updateTaskSonglists.mjs"; //更新任务栏歌单
+import { mainWindow } from "../settings/windows.mjs";
 
 export default function () {
+  /* 任务栏播放歌单 */
+  let playIntentIndex: number | null = null; //想要播放的歌单索引
+  const args = process.argv;
+  if (args[1] == "--play-song-list") {
+    playIntentIndex = +args[2];
+  }
+
   //获取歌单列表
   ipcMain.handle("getSongLists", () => {
     const text = fs.readFileSync(songListsPath).toString();
@@ -20,6 +28,12 @@ export default function () {
     const names = songLists.map((item) => item.name); //歌单名称
     updateTaskSonglists(names); //更新任务栏歌单列表
     console.log("[getSongLists]", songLists);
+
+    // 在获取歌单列表后，播放指定歌单
+    setTimeout(() => {
+      mainWindow.value?.webContents.send("playSongList", playIntentIndex); //播放歌单
+    });
+
     return songLists;
   });
 

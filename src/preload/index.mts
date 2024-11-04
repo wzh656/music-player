@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
+import { MusicPlatform } from "../main/settings/MusicPlatform.mjs";
 
 contextBridge.exposeInMainWorld("electron", {
   /* 窗口操作 */
@@ -11,6 +12,10 @@ contextBridge.exposeInMainWorld("electron", {
 
   /* 歌单歌词文件操作 */
   getSongLists: () => ipcRenderer.invoke("getSongLists"), //获取歌单列表
+  onPlaySongList: (callback: (index: number) => void) =>
+    ipcRenderer.on("playSongList", (event: unknown, index: number) =>
+      callback(index),
+    ), //监听播放歌单
   updateSongLists: (songListsStr: string) =>
     ipcRenderer.send("updateSongLists", songListsStr), //更新歌单列表
   getSongListSongs: (name: string) =>
@@ -38,8 +43,8 @@ contextBridge.exposeInMainWorld("electron", {
   openUrl: (url: string) => ipcRenderer.send("openUrl", url), //浏览器打开链接
 
   /* 搜索操作 */
-  search: (keyword: string, page: number) =>
-    ipcRenderer.invoke("search", keyword, page), //搜索
+  search: (keyword: string, platform: MusicPlatform, page: number) =>
+    ipcRenderer.invoke("search", keyword, platform, page), //搜索
   /* onSearchData: (callback: (data: SearchData) => void) =>
     ipcRenderer.on("searchData", (event, data: SearchData) => callback(data)), //监听搜索结果 */
 

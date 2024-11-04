@@ -12,7 +12,7 @@ export default function () {
       label: "打开应用",
       click: () => {
         mainWindow.value!.show();
-        updateThumbnailToolbar(false); //初始化缩略图工具栏
+        updateThumbnailToolbar(); //初始化缩略图工具栏
       },
     },
     {
@@ -26,6 +26,7 @@ export default function () {
 
   tray.on("click", () => {
     mainWindow.value!.show();
+    updateThumbnailToolbar(); //初始化缩略图工具栏
   });
 
   tray.setToolTip("冈易音乐播放器"); //悬浮提示

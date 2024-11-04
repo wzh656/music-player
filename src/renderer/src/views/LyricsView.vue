@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, reactive, ref, watch, type Ref } from "vue";
+import { inject, onMounted, reactive, ref, watch, type Ref } from "vue";
 import * as musicController from "@/ts/musicController";
 
 /* 获取依赖 */
@@ -47,18 +47,20 @@ watch(currentMusic, async () => {
 });
 
 /* 监听鼠标滚动 停止自动滚动 */
-let autoScroll = true;
-let scrollId: null | number = null;
-document.addEventListener("wheel", () => {
-  autoScroll = false;
+const lyricsListElem = ref<HTMLElement | null>(null); // 歌词列表元素
+let autoScroll = true; // 是否自动滚动
+let scrollId: number | null = null;
+onMounted(() => {
+  lyricsListElem.value!.addEventListener("wheel", () => {
+    autoScroll = false;
 
-  if (scrollId != null) clearTimeout(scrollId);
-  scrollId = window.setTimeout(() => (autoScroll = true), 5000);
+    if (scrollId != null) clearTimeout(scrollId);
+    scrollId = window.setTimeout(() => (autoScroll = true), 5000);
+  });
 });
 
 /* 播放进度时 滚动歌词 */
-const lyricsListElem = ref<HTMLElement | null>(null);
-const activeIndex = ref(0); //当前高亮行
+const activeIndex = ref(0); // 当前高亮行
 watch(currentTime, () => {
   if (!lyricsListElem.value) return;
 
@@ -78,7 +80,7 @@ watch(currentTime, () => {
       activeIndex.value
     ] as HTMLElement;
     lyricsListElem.value.scrollTo({
-      top: target.offsetTop - lyricsListElem.value.clientHeight / 2,
+      top: target.offsetTop - lyricsListElem.value.clientHeight / 2 + 50,
       behavior: "smooth",
     }); //平滑滚动
   } else {
@@ -97,8 +99,8 @@ function setCurrentTime(time: number) {
 </script>
 
 <template>
-  <div v-if="data.length == 0">暂无歌词</div>
-  <ul v-if="data.length > 0" ref="lyricsListElem">
+  <div v-show="data.length == 0">暂无歌词</div>
+  <ul v-show="data.length > 0" ref="lyricsListElem">
     <li
       v-for="(line, index) in data"
       :key="index"

@@ -1,5 +1,6 @@
 import { ipcMain } from "electron";
 import fs from "node:fs";
+import { playState } from "../settings/playState.mjs"; //播放状态
 import updateThumbnailToolbar from "../updateThumbnailToolbar.mjs"; //更新缩略图工具栏
 import * as parser from "music-metadata"; //解析音乐信息
 
@@ -24,7 +25,8 @@ export default function () {
   });
 
   //更新播放状态
-  ipcMain.on("updatePlayState", (_, playState: boolean) => {
-    updateThumbnailToolbar(playState);
+  ipcMain.on("updatePlayState", (_, playStateValue: boolean) => {
+    playState.value = playStateValue;
+    updateThumbnailToolbar();
   });
 }

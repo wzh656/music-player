@@ -42,20 +42,27 @@ function onEnterBilibili(event: KeyboardEvent) {
 /* 搜索 */
 const searchData = reactive<SearchDataItem[]>([]);
 const searching = ref(false); //是否正在搜索
+const searchAPI_QQ = "https://music.90svip.cn/";
 async function search(keyword: string, page: number = 1) {
   searching.value = true; //正在搜索
 
-  const data = await window.electron.search(
-    keyword,
-    currentPlatform.value,
-    page,
-  ); //搜索
+  const platform = currentPlatform.value;
+  const data = await window.electron.search(keyword, platform, page); //搜索
   searching.value = false; //搜索完成
   if (data.code != 200 || data.error != "") return;
+  console.log("[Search Result]", data);
 
   //更新搜索结果
-  searchData.splice(0, searchData.length);
-  searchData.push(...data.data);
+  searchData.splice(0, searchData.length); //清空
+  if (platform == MusicPlatform.QQ) {
+    data.data.forEach((item) => {
+      item.url = searchAPI_QQ + item.url;
+      item.lrc = searchAPI_QQ + item.lrc;
+    });
+    searchData.push(...data.data);
+  } else {
+    searchData.push(...data.data);
+  }
 }
 /* window.electron.onSearchData((data) => {
   console.log("[onSearchData]", data);
@@ -147,7 +154,11 @@ function onmouseleave(event: MouseEvent) {
 /* 判断vip歌曲 */
 async function isVip(item: SearchDataItem) {
   const response = await fetch(item.url);
-  return response.url == "https://music.163.com/404";
+  if (item.url.startsWith(searchAPI_QQ)) {
+    return (await response.text()) == "获取失败";
+  } else {
+    return response.url == "https://music.163.com/404";
+  }
 }
 
 /* 播放音乐 */
@@ -157,7 +168,7 @@ async function playMusic(item: SearchDataItem) {
   currentMusic.value = item.url; //设为当前播放
   playList.value = [item.url]; //设为播放列表
   playListShuffled.value = [item.url]; //设为打乱后的播放列表
-  currentSonglist.value = item.title; //设为当前歌单名称
+  currentSonglist.value = item.title ?? item.name ?? "未知歌曲"; //设为当前歌单名称
   // playMode.value = PlayMode.loop; //循环播放
   currentLyrics.value = item.lrc; //设为当前歌词
   musicController.playMusic(currentMusic.value, {
@@ -171,17 +182,23 @@ async function playMusic(item: SearchDataItem) {
 /* 下载音乐 */
 async function downloadMusic(item: SearchDataItem) {
   if (await isVip(item)) {
-    window.electron.openUrl(`https://music.163.com/#/song?id=${item.songid}`);
+    window.electron.openUrl(item.link);
     return vipDialog();
   }
 
-  window.electron.downloadFile(item.url, item.title + ".mp3");
+  window.electron.downloadFile(
+    item.url,
+    (item.title ?? item.name ?? "未知歌曲") + ".mp3",
+  );
 }
 
 /* 下载歌词 */
 // const txtMime = "data:application/octet-stream,";
 function downloadLyrics(item: SearchDataItem) {
-  window.electron.downloadText(item.lrc, item.title + ".lrc");
+  window.electron.downloadText(
+    item.lrc,
+    (item.title ?? item.name ?? "未知歌手") + ".lrc",
+  );
 }
 
 /* Bilibili下载音频 */
@@ -304,14 +321,14 @@ function formatTotalTime(data: SearchDataBilibili) {
       <div></div>
       <span>网易云</span>
     </div>
-    <div
+    <!-- <div
       class="radio"
       :active="currentPlatform == MusicPlatform.KG"
       @click="switchPlatform(MusicPlatform.KG)"
     >
       <div></div>
       <span>酷狗</span>
-    </div>
+    </div> -->
     <div
       class="radio"
       :active="currentPlatform == MusicPlatform.QQ"
@@ -362,7 +379,7 @@ function formatTotalTime(data: SearchDataBilibili) {
         @mouseleave="onmouseleave"
         @click="playMusic(item)"
       >
-        {{ item.title }}
+        {{ item.title ?? item.name ?? "未知歌曲" }}
       </span>
       <span
         data-type="author"
@@ -370,7 +387,7 @@ function formatTotalTime(data: SearchDataBilibili) {
         @mouseleave="onmouseleave"
         @click="playMusic(item)"
       >
-        {{ item.author }}
+        {{ item.author ?? item.artist ?? "未知歌手" }}
       </span>
       <button @click="downloadMusic(item)">下载音乐</button>
       <button @click="downloadLyrics(item)">下载歌词</button>
@@ -493,7 +510,7 @@ input {
 
   //B站搜索结果
   &.bilibili {
-    grid-template-columns: 5rem auto 1fr 4rem 4rem;
+    grid-template-columns: 5rem 2fr 1fr 4rem 4rem;
     .total {
       grid-column-start: span 2; //跨两列
     }
@@ -508,6 +525,7 @@ input {
   span {
     padding: 0.5rem;
     text-align: center;
+    word-break: break-all; //超长内容自动换行
     cursor: pointer;
 
     &.active {

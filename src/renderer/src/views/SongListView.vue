@@ -37,6 +37,11 @@ function playMusic(music: string) {
   playState.value = true; //设为播放状态
 }
 
+/* 主进程播放歌单 */
+window.electron.onPlaySongList((index: number) => {
+  songlistPlay(index);
+});
+
 /* 左键播放歌单 */
 const currentSonglistIndex = ref<number>(-1); //当前歌单索引
 async function songlistPlay(index: number) {
