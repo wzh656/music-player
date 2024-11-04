@@ -24,6 +24,10 @@
 $ pnpm install
 ```
 
+### 安装 ffmpeg (Install ffmpeg)
+
+将 `ffmpeg.exe` 放入 `bin` 文件夹下
+
 ### 调试运行 (Development)
 
 ```bash
