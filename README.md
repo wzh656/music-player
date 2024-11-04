@@ -1,26 +1,36 @@
-# my-app
+# 冈易音乐播放器
 
-An Electron application with Vue and TypeScript
+一个基于 Electron + Vue + TypeScript 的音乐播放器。
 
-## Recommended IDE Setup
+## 功能 (Features)
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin)
+[x] 导入本地歌单音乐
+[x] 滚动歌词显示 （同名`.lrc`文件）
+[x] 网易云热歌推荐
+[x] 音乐搜索器
+[x] 网易云、QQ音乐：在线播放/下载歌曲/下载歌词 （不支持会员歌曲）
+[x] BiliBili: 音乐/视频批量下载 （首次需登录）
+[x] 任务栏右键直接播放歌单
+[x] 窗口略缩图控制音频播放
+[x] 最小化到托盘播放
+[x] 深色模式/浅色模式随心切换
+[x] 主题色随心切换
+[ ] 自选批量下载
+[ ] 使用说明
 
-## Project Setup
-
-### Install
+### 安装依赖 (Install dependencies)
 
 ```bash
 $ pnpm install
 ```
 
-### Development
+### 调试运行 (Development)
 
 ```bash
 $ pnpm dev
 ```
 
-### Build
+### 构建 (Build)
 
 ```bash
 # For windows
