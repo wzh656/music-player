@@ -4,3 +4,5 @@ out
 .DS_Store
 *.log*
 bin
+.vscode
+extensions
